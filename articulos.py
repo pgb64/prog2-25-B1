@@ -45,7 +45,8 @@ class Articulo: #por ahora sin herenchia
         self.proveedor=proveedor
         # no se eliminar objetos, aquí se comprueba
     
-    def eliminar_producto(self): # no se como se hace
+    def eliminar_producto(self): # no se como se hace esto
+
         
     
         
