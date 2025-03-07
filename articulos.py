@@ -55,13 +55,16 @@ class Articulo: #por ahora sin herenchia
         self.cantidad=cantidad
         self.proveedor=proveedor
         # no se eliminar objetos, aquí se comprueba.
-
+        
     def eliminar_producto(self):
-
+        pass
+    
     def pedir_paquete(self):
-        self.cantidad-=1 # quita un paquete del cantidad
-        if self.cantidad<1:
-            self.eliminar_producto()
+        if self.cantidad>1:
+            self.cantidad-=1
+            #se hace un paquete
+        else:
+            #bruh
 
 
 class Paquete(Articulo):
