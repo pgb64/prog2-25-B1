@@ -57,14 +57,17 @@ class Articulo: #por ahora sin herenchia
         # no se eliminar objetos, aquí se comprueba.
         
     def eliminar_producto(self):
-        pass
+        del self
     
     def pedir_paquete(self):
         if self.cantidad>1:
             self.cantidad-=1
-            #se hace un paquete
+            p=Paquete(self)
+            print('artículo pedido exitosamente')
+            
+            return p
         else:
-            #bruh
+            print('No quedan artículos de este tipo')
 
 
 class Paquete(Articulo):
