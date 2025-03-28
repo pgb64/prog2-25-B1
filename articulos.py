@@ -1,4 +1,4 @@
-from paquetes import Paquete
+from auxilio_paquetes import *
 
 class Articulo: #por ahora sin herenchia
     '''
@@ -55,10 +55,8 @@ class Articulo: #por ahora sin herenchia
     def mostrar_codigo(self):
         return self.__codigo
 
-    def 
-
     
-    def editar_datos(self,nombre=self.nombre,cantidad=self.cantidad,proveedor=self.proveedor):
+    def editar_datos(self,nombre,cantidad,proveedor):
         self.nombre=nombre
         self.cantidad=cantidad
         self.proveedor=proveedor

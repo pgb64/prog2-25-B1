@@ -1,5 +1,7 @@
-from articulos import Articulo
+from auxilio_paquetes import *
 
 class Paquete(Articulo):
 
-    def __init__(self,):
+    def __init__(self,*kwargs):
+        super().__init()
+        
