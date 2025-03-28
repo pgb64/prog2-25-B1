@@ -1,9 +1,11 @@
-from auxilio_paquetes import *
-
 class Articulo: #por ahora sin herenchia
     '''
     atrubutos
     -------------
+    dicc_proced:
+
+        un diccionario cuyas claves son los origenes de cada artículo y sus valores son listas de los códigos que tengan el mismo origen
+
     nombre: str
     
         nombre del producto
@@ -41,35 +43,51 @@ class Articulo: #por ahora sin herenchia
     pedir_paquete:
 
         transofma un articulo en paquete.
+
+    dop:
+
+        añade un código al diccionario dicc_proced según su procedencia
+
+
     
     '''
-    def __init__(self,nombre,cantidad,codigo,proveedor,descripcion):
+
+    dicc_proced = {}
+
+
+    def __init__(self,nombre,cantidad,proveedor,codigo,descripcion,procedencia):
         self.nombre=nombre
         self.cantidad=cantidad
         self.__codigo=codigo # es necesario que sea único
         self.proveedor=proveedor # la base de datos, por favor
         self.descripcion=descripcion
-        # self.procedencia=procedencia, cuando tengamos la base de datos, se podrá obtener la procedencia de un paquete de alguna otra forma
+        self.procedencia=procedencia # cuando tengamos la base de datos, se podrá obtener la procedencia de un paquete de alguna otra forma
+        type(self).dop(procedencia,self.__codigo)
 
+    @classmethod
+    def dop(cls,procedencia,cod):
+        if procedencia not in dicc_proced.keys():
+            dicc_proced[procedencia].append(cod)
 
     def mostrar_codigo(self):
         return self.__codigo
-
     
     def editar_datos(self,nombre,cantidad,proveedor):
         self.nombre=nombre
         self.cantidad=cantidad
         self.proveedor=proveedor
         
-    def eliminar_producto(self):
+    def eliminar_producto(self): # esto solo podrá hacerlo quén haya subido el artículo
         del self
-    
+
     def pedir_paquete(self):
+        from paquetes import Paquete
         if self.cantidad>1:
             self.cantidad-=1
             p=Paquete(self)
             print('artículo pedido exitosamente')
             
             return p
+
         else:
             print('No quedan artículos de este tipo')
