@@ -1,3 +1,5 @@
+from paquetes import Paquete
+
 class Articulo: #por ahora sin herenchia
     '''
     atrubutos
@@ -35,6 +37,10 @@ class Articulo: #por ahora sin herenchia
     eliminar producto
     
         se elimina el producto indicado. Se hará automatico cuando la cantidad del producto llegue a 0
+
+    pedir_paquete:
+
+        transofma un articulo en paquete.
     
     '''
     def __init__(self,nombre,cantidad,codigo,proveedor,descripcion):
@@ -49,12 +55,13 @@ class Articulo: #por ahora sin herenchia
     def mostrar_codigo(self):
         return self.__codigo
 
+    def 
+
     
     def editar_datos(self,nombre=self.nombre,cantidad=self.cantidad,proveedor=self.proveedor):
         self.nombre=nombre
         self.cantidad=cantidad
         self.proveedor=proveedor
-        # no se eliminar objetos, aquí se comprueba.
         
     def eliminar_producto(self):
         del self
@@ -68,8 +75,3 @@ class Articulo: #por ahora sin herenchia
             return p
         else:
             print('No quedan artículos de este tipo')
-
-
-class Paquete(Articulo):
-
-    def __init__(self,):
