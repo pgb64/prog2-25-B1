@@ -1,10 +1,9 @@
 import csv
 
 class db:
-    """Gestor de base de datos CSV para usuarios y sus datos personales
+    """Gestor de base de datos CSV para usuarios y sus datos personales (Esta bastante crudo esto, segun me pidais puedo añadir nuevos metodos)
     
-    Esta clase proporciona una interfaz para gestionar usuarios y sus datos personales
-    almacenados en archivos CSV. Maneja dos archivos principales:
+    Esta clase proporciona una interfaz para gestionar usuarios y sus datos personale almacenados en archivos CSV. Usa dos archivos principales:
     - usuarios.csv: Contiene credenciales y tipo de usuario
     - datos_personales.csv: Almacena información personal de los usuarios
     
@@ -17,7 +16,7 @@ class db:
     """
     
     def __init__(self):
-        """Inicializa los archivos CSV en la carpeta data/
+        """Inicializa los archivos CSV
         Crea los archivos si no existen y establece las cabeceras necesarias.
         """
         self.usuarios_csv = 'data/usuarios.csv'
