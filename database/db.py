@@ -1,6 +1,6 @@
 import csv
 
-class db:
+class Db:
     """Gestor de base de datos CSV para usuarios y sus datos personales (Esta bastante crudo esto, segun me pidais puedo añadir nuevos metodos)
     
     Esta clase proporciona una interfaz para gestionar usuarios y sus datos personale almacenados en archivos CSV. Usa dos archivos principales:
