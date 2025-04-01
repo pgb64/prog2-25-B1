@@ -42,7 +42,7 @@ class Articulo: #por ahora sin herenchia
 
     pedir_paquete:
 
-        transofma un articulo en paquete.
+        transofma un articulo en paquete. Recibe como parámetro el nombre de usuario del destinatario.
 
     dop:
 
@@ -54,7 +54,6 @@ class Articulo: #por ahora sin herenchia
 
     dicc_proced = {}
 
-
     def __init__(self,nombre,cantidad,proveedor,codigo,descripcion,procedencia):
         self.nombre=nombre
         self.cantidad=cantidad
@@ -63,11 +62,17 @@ class Articulo: #por ahora sin herenchia
         self.descripcion=descripcion
         self.procedencia=procedencia # cuando tengamos la base de datos, se podrá obtener la procedencia de un paquete de alguna otra forma
         type(self).dop(procedencia,self.__codigo)
+        # csv!!!!!!
 
     @classmethod
     def dop(cls,procedencia,cod):
-        if procedencia not in dicc_proced.keys():
-            dicc_proced[procedencia].append(cod)
+        if procedencia not in cls.dicc_proced.keys():
+            cls.dicc_proced[procedencia]=cod
+    
+    def __str__(self):
+        return f'{self.nombre} ({self.mostrar_codigo()}): {self.cantidad} unidades en total. Distribuido por {self.proveedor} desde {self.procedencia}'
+
+
 
     def mostrar_codigo(self):
         return self.__codigo
@@ -80,14 +85,15 @@ class Articulo: #por ahora sin herenchia
     def eliminar_producto(self): # esto solo podrá hacerlo quén haya subido el artículo
         del self
 
-    def pedir_paquete(self):
+    def pedir_paquete(self,usuario):
         from paquetes import Paquete
-        if self.cantidad>1:
+        if self.cantidad>=1:
             self.cantidad-=1
-            p=Paquete(self)
+            p=Paquete(self.nombre,self.mostrar_codigo(),self.procedencia,usuario)
             print('artículo pedido exitosamente')
             
             return p
 
         else:
             print('No quedan artículos de este tipo')
+            
