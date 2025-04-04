@@ -1,6 +1,6 @@
 flask
-socket
 requests
 bcrypt
-python-dotenv
-
+dotenv
+pandas
+flask-jwt-extended
