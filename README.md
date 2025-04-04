@@ -4,7 +4,7 @@ Trabajo de prog-2 sistema de gestión de reparto.
 ## Autores
 
 * (Coordinador) [Nombre 1 Apellido 1 Apellido 1](https://github.com/alumno1)
-* [Nombre 2 Apellido 2 Apellido 2](https://github.com/alumno2)
+* [Andrés Segurado Climent](https://github.com/Bonew24)
 * [Jorge Izquierdo Baeza](https://github.com/jorgeizquierdo-git)
 * [Nombre 4 Apellido 4 Apellido 4](https://github.com/alumno4)
 * [Nombre 5 Apellido 5 Apellido 5](https://github.com/alumno5)
