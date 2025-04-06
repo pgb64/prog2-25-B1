@@ -56,13 +56,15 @@ class Articulo: #por ahora sin herenchia
     def __init__(self,nombre,cantidad,proveedor,codigo,descripcion,procedencia):
         self.nombre=nombre
         self.cantidad=cantidad
+        '''
         try:
-            if codigo not in basedatos:
+            if codigo not in basedatos.claves()???:
                 self.__codigo=codigo # es necesario que sea único
             else:
                 raise KeyError
         except:
             print('ERROR: Código duplicado')
+            '''
         self.proveedor=proveedor # la base de datos, por favor
         self.descripcion=descripcion
         try:
