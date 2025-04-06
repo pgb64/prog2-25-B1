@@ -2,23 +2,23 @@ from articulos import Articulo
 '''
 atributos
 -------------------
-nombre:
+nombre: str
 
     el mismo nombre que el artículo
     
-codigo_paquete:
+codigo_paquete: str
 
     se generará aleatorio y se asegurará que no está ya en el csv
     
-procedencia:
+procedencia: str
 
     la misma que el paquete
     
-usuario:
+usuario: str
 
     Nombre de usuario del login actual
     
-enviado:
+enviado: bool
 
     Booleano que define si un paquete ha sido enviado o no
     
@@ -35,7 +35,7 @@ __str__():
     
 se_ha_enviado():
 
-    este método pone a True el atributo en viado cuando el usuario reciba el paquete.
+    este método pone a True el atributo enviado cuando el usuario reciba el paquete.
     
 '''
 class Paquete(Articulo):
