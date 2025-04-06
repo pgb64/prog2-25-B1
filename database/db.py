@@ -63,6 +63,7 @@ class DB:
         self.users_data = pd.concat([self.users_data, update], ignore_index=True)
         update.to_csv(self.users, mode='a', header=False, index=False)
 
+
     @classmethod
     def get_all_usernames(cls):
         return [username for username in cls.users_data['user']]
@@ -77,11 +78,6 @@ class DB:
 class Security:
     
     @staticmethod
-    def get_key():
-        load_dotenv()
-        return os.getenv('KEY')
-    
-    @staticmethod
     def hash_password(password):
         KEY = Security.get_key().encode('utf-8')
         hash = bcrypt.hashpw(password.encode('utf-8'), bcrypt.hashpw(KEY, bcrypt.gensalt()))
@@ -92,7 +88,6 @@ class Security:
         return bcrypt.checkpw(password.encode(), hash.encode())
     
 
-    # Implementar token jwt aquí
     
 
 
