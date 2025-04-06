@@ -54,9 +54,6 @@ class Articulo: #por ahora sin herenchia
     dicc_proced = {}
 
     def __init__(self,nombre,cantidad,proveedor,codigo,descripcion,procedencia):
-        self.nombre=nombre
-        self.cantidad=cantidad
-        '''
         try:
             if codigo not in basedatos.claves()???:
                 self.__codigo=codigo # es necesario que sea único
@@ -64,14 +61,16 @@ class Articulo: #por ahora sin herenchia
                 raise KeyError
         except:
             print('ERROR: Código duplicado')
-            '''
-        self.proveedor=proveedor # la base de datos, por favor
-        self.descripcion=descripcion
-        try:
-            self.procedencia=procedencia # cuando tengamos la base de datos, se podrá obtener la procedencia de un paquete de alguna otra forma
-            type(self).dop(procedencia,self.__codigo)
-        except:
-            print('Procedencia no válida')
+        else:
+            self.nombre=nombre
+            self.cantidad=cantidad
+            self.proveedor=proveedor # la base de datos, por favor
+            self.descripcion=descripcion
+            try:
+                self.procedencia=procedencia # cuando tengamos la base de datos, se podrá obtener la procedencia de un paquete de alguna otra forma
+                type(self).dop(procedencia,self.__codigo)
+            except:
+                print('Procedencia no válida')
         # csv!!!!!!
 
     @classmethod
