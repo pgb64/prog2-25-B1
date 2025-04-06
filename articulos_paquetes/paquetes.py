@@ -38,7 +38,7 @@ se_ha_enviado():
     este método pone a True el atributo enviado cuando el usuario reciba el paquete.
     
 '''
-class Paquete(Articulo):
+class Paquete:
 
     def __init__(self,nombre,codigo_paquete,procedencia,usuario):
         self.nombre=nombre
