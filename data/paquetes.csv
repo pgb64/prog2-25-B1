@@ -1,1 +1,7 @@
 nombre,codigo_envio,procedencia,usuario_receptor,enviado
+Paquete Frágil,PKG001,Almacén Central,cliente1,True
+Documentos,PKG002,Oficina Norte,cliente1,True
+Electrónica,PKG003,Centro Logístico,repart1,False
+Paquete Frágil,PKG001,Almacén Central,cliente1,True
+Documentos,PKG002,Oficina Norte,cliente1,True
+Electrónica,PKG003,Centro Logístico,repart1,False

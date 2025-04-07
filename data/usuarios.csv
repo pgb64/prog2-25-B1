@@ -5,3 +5,9 @@ id,user,pass,type
 4,Jorge,1234,admin
 5,Alex,1234,admin
 6,Ignacio,1234,admin
+7,admin1,admin123,admin
+8,repart1,repart123,repartidor
+9,cliente1,cliente123,cliente
+10,admin1,admin123,admin
+11,repart1,repart123,repartidor
+12,cliente1,cliente123,cliente

@@ -387,3 +387,4 @@ class Db:
                     updated = True
                 writer.writerow(furgoneta)
         return updated
+
