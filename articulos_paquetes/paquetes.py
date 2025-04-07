@@ -1,4 +1,5 @@
 from articulos import Articulo
+import database.db as db
 '''
 atributos
 -------------------
@@ -49,8 +50,12 @@ class Paquete:
         #se mete al csv aquí
         
     def __str__(self):
-        return f'Paquete {self.nombre} (kluybqawv) desde {self.procedencia} a {self.usuario} '
+        return f'Paquete {self.nombre} ({self.codigo_paquete}) desde {self.procedencia} a {self.usuario} '
 
     def se_ha_enviado(self):
         self.enviado=True
-        # ???
+
+    def controlador_ver_paquete(self,id):
+        p=db.get_paquete_by_codigo(id)
+        print(p)
+        
