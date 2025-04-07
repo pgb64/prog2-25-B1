@@ -309,15 +309,7 @@ class Db:
 
 # --- Metodos para gestion de repartidores ---
     def add_repartidor(self, nombre, telefono, provincia, vehiculo):
-        """Añade un nuevo repartidor a la base de datos
-        Args:
-            nombre: Nombre completo del repartidor
-            telefono: Número de teléfono
-            provincia: Provincia donde opera
-            vehiculo: Tipo de vehículo que utiliza
-        Returns:
-            int: ID asignado al nuevo repartidor
-        """
+        """Añade un nuevo repartidor a la base de dato """
         repartidores = self.get_repartidores()
         
         # Generar nuevo ID
@@ -326,17 +318,7 @@ class Db:
         
         with open(self.repartidores_csv, 'a', newline='') as f:
             writer = csv.writer(f)
-            writer.writerow([
-                nombre,
-                str(new_id),
-                telefono,
-                provincia,
-                '',  # ubicacion_tiempo_real (inicialmente vacía)
-                vehiculo,
-                'disponible',  # estado inicial
-                '0'  # envios_asignados (inicialmente 0)
-            ])
-        
+            writer.writerow([nombre, str(new_id), telefono, provincia, '', vehiculo, 'disponible','0'])
         return new_id
     
     def get_repartidores(self):
