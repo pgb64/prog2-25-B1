@@ -49,7 +49,7 @@ class Paquete:
         #se mete al csv aquí
         
     def __str__(self):
-        return f'Paquete {self.nombre} (kluybqawv) desde {self.procedencia} a {self.usuario} '
+        return f'Paquete {self.nombre} ({self.codigo}) desde {self.procedencia} a {self.usuario} '
 
     def se_ha_enviado(self):
         self.enviado=True
