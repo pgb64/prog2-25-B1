@@ -1,4 +1,4 @@
-from api import server
+from sistema import server
 import requests
 url = server.path
 ruta = server.path + '/get_all_data_public'

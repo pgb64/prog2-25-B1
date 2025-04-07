@@ -1,3 +1,5 @@
-from api import server
+from sistema.servidor import Server
 
-server.launch()
+if __name__ == "__main__":
+    launcher = Server()
+    launcher.launch()
