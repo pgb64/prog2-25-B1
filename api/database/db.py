@@ -1,10 +1,10 @@
 import csv
+import os
 
-class db:
-    """Gestor de base de datos CSV para usuarios y sus datos personales
+class Db:
+    """Gestor de base de datos CSV para usuarios y sus datos personales (Esta bastante crudo esto, segun me pidais puedo añadir nuevos metodos)
     
-    Esta clase proporciona una interfaz para gestionar usuarios y sus datos personales
-    almacenados en archivos CSV. Maneja dos archivos principales:
+    Esta clase proporciona una interfaz para gestionar usuarios y sus datos personale almacenados en archivos CSV. Usa dos archivos principales:
     - usuarios.csv: Contiene credenciales y tipo de usuario
     - datos_personales.csv: Almacena información personal de los usuarios
     
@@ -17,25 +17,37 @@ class db:
     """
     
     def __init__(self):
-        """Inicializa los archivos CSV en la carpeta data/
-        Crea los archivos si no existen y establece las cabeceras necesarias.
-        """
+        """Inicializa todos los archivos CSV necesarios"""
+        # Rutas de los archivos
         self.usuarios_csv = 'data/usuarios.csv'
         self.datos_csv = 'data/datos_personales.csv'
+        self.articulos_csv = 'data/articulos.csv'
+        self.paquetes_csv = 'data/paquetes.csv'
+        self.repartidores_csv = 'data/repartidores.csv'
+        self.furgonetas_csv = 'data/furgonetas.csv'
         
-        # Crear archivos si no existen
-        with open(self.usuarios_csv, 'a+') as f: pass
-        with open(self.datos_csv, 'a+') as f: pass
+        os.makedirs('data', exist_ok=True)
         
-        # Inicializar cabeceras
-        for archivo, campos in [
-            (self.usuarios_csv, ['id','user','pass','type']),
-            (self.datos_csv, ['id','fecha','dir','cp','ciudad','genero'])
-        ]:
-            with open(archivo, 'r+', newline='') as f:
-                if not f.read(1):
+        # Archivos CSV y sus cabeceras
+        archivos_config = {
+            self.usuarios_csv: ['id', 'user', 'pass', 'type'],
+            self.datos_csv: ['id', 'fecha', 'dir', 'cp', 'ciudad', 'genero'],
+            self.articulos_csv: ['nombre', 'codigo', 'cantidad', 'proveedor', 'descripcion'],
+            self.paquetes_csv: ['nombre', 'codigo_envio', 'procedencia', 'usuario_receptor', 'enviado'],
+            self.repartidores_csv: ['nombre', 'id', 'telefono', 'provincia', 'ubicacion_tiempo_real', 
+                                'vehiculo', 'estado', 'envios_asignados'],
+            self.furgonetas_csv: ['matricula', 'capacidad_maxima', 'provincia', 'envios_asignados', 'conductor']
+        }
+        
+        # Bucle para inicializar los archivos CSV
+        for archivo, campos in archivos_config.items():
+            if not os.path.exists(archivo) or os.path.getsize(archivo) == 0:
+                with open(archivo, 'w', newline='') as f:
                     csv.writer(f).writerow(campos)
-
+                    
+                    
+# ---- Métodos de gestion de usuarios ----
+                    
     def add_user(self, user, password, tipo):
         """Registra un nuevo usuario en el sistema
         
@@ -228,3 +240,150 @@ class db:
         """
         user_data = self.login(user['user'], user['pass'])
         return user_data and user_data['type'] == 'admin'
+    
+# ---- Métodos de gestion de articulos ----
+    def add_articulo(self, nombre, codigo, cantidad, proveedor, descripcion):
+        """Añade un nuevo articulo al sistema"""
+        with open(self.articulos_csv, 'a', newline='') as f:
+            csv.writer(f).writerow([nombre, codigo, cantidad, proveedor, descripcion])
+            
+    def get_articulos(self):
+        """Obtiene todos los articulos"""
+        with open(self.articulos_csv, 'r') as f:
+            return list(csv.DictReader(f))
+    
+    def get_articulo_codigo(self, codigo):
+        """Obtiene un articulo especifico por su codigo"""
+        for articulo in self.get_articulos(): #Sacamos los articulos con la funcion para obtenerlos todos
+            if articulo['codigo'] == codigo:
+                return articulo
+        return None
+    
+    
+
+# ---- Métodos de gestion de paquetes ----
+    def add_paquete(self, nombre, codigo_envio, procedencia, usuario_receptor, enviado):
+        """Registramos un nuevo paquete (El tema booleano me ha dado muchos problemas al leerlo luego 
+        asi que lo guardo como string, si alguien sabe como hacerlo mejor que me lo diga)"""
+        if  enviado:   
+            enviado_s = 'True'
+        else:
+            enviado_s = 'False'
+        with open(self.paquetes_csv, 'a') as f:
+            csv.writer(f).writerow([nombre, codigo_envio, procedencia, usuario_receptor, enviado_s]) 
+            
+    def get_paquetes(self):
+        """Obtiene los paquetes ya registrados"""
+        with open(self.paquetes_csv, 'r') as f:
+            paquetes = list(csv.DictReader(f))
+        #Convertimos enviado a booleano
+        for paquete in paquetes:
+            paquete['enviado'] = paquete['enviado'] == 'True'
+        return paquetes
+    
+    def get_paquete_by_codigo(self, codigo_envio):
+        """Obtiene un paquete especifico por su codigo"""
+        for paquete in self.get_paquetes():
+            if paquete['codigo_envio'] == codigo_envio:
+                return paquete
+        return None
+    
+    def update_estado_envio(self, codigo_envio, enviado):
+        """ACtualiz el estado de un envio de paquete"""
+        paquetes = self.get_paquetes()
+        updated = False
+        
+        with open(self.paquetes_csv, 'w', newline='') as f:
+            # Corregido: pasar una lista de fieldnames en lugar de intentar indexar
+            fieldnames = ['nombre', 'codigo_envio', 'procedencia', 'usuario_receptor', 'enviado']
+            writer = csv.DictWriter(f, fieldnames=fieldnames)
+            writer.writeheader()
+
+            for paquete in paquetes:
+                if paquete['codigo_envio'] == str(codigo_envio):
+                    paquete['enviado'] = 'True' if enviado else 'False'
+                    updated = True
+                writer.writerow(paquete)
+        return updated
+            
+
+# --- Metodos para gestion de repartidores ---
+    def add_repartidor(self, nombre, telefono, provincia, vehiculo):
+        """Añade un nuevo repartidor a la base de datos
+        Args:
+            nombre: Nombre completo del repartidor
+            telefono: Número de teléfono
+            provincia: Provincia donde opera
+            vehiculo: Tipo de vehículo que utiliza
+        Returns:
+            int: ID asignado al nuevo repartidor
+        """
+        repartidores = self.get_repartidores()
+        
+        # Generar nuevo ID
+        existing_ids = [int(r['id']) for r in repartidores if r['id'].isdigit()]
+        new_id = max(existing_ids) + 1 if existing_ids else 1
+        
+        with open(self.repartidores_csv, 'a', newline='') as f:
+            writer = csv.writer(f)
+            writer.writerow([
+                nombre,
+                str(new_id),
+                telefono,
+                provincia,
+                '',  # ubicacion_tiempo_real (inicialmente vacía)
+                vehiculo,
+                'disponible',  # estado inicial
+                '0'  # envios_asignados (inicialmente 0)
+            ])
+        
+        return new_id
+    
+    def get_repartidores(self):
+        """Obtiene todos los repartidoress"""
+        with open(self.repartidores_csv, 'r')as f:
+            return list(csv.DictReader(f))
+    
+    def update_ubicacion_repartidor(self, repartidor_id, ubicacion):
+        """Actualiza la ubicacion en tiempo real de un repartidor"""
+        repartidores = self.get_repartidores()
+        updated = False
+
+        with open(self.repartidores_csv, 'w', newline='') as f:
+            writer = csv.DictWriter(f, fieldnames=['nombre', 'id', 'telefono', 'provincia', 'ubicacion_tiempo_real', 'vehiculo', 'estado', 'envios_asignados'])
+            writer.writeheader()
+
+            for repartidor in repartidores:
+                if repartidor['id'] == str(repartidor_id):
+                    repartidor['ubicacion_tiempo_real'] = ubicacion
+                    updated = True
+                writer.writerow(repartidor)
+
+        return updated
+
+# --- Metodos para la clase Furgonetas ---
+    def add_furgoneta(self, matricula, capacidad_maxima, provincia, conductor):
+        """Añade una furgoneta a la base de datos"""
+        with open(self.furgonetas_csv, 'a', newline='') as f:
+            csv.writer(f).writerow([matricula, str(capacidad_maxima), provincia, '0', conductor])
+    
+    def get_furgonetas(self):
+        """Obtiene la informacion de todas las furgonetas"""
+        with open(self.furgonetas_csv, 'r') as f:
+            return list(csv.DictReader(f))
+        
+    def asignar_conductor_furgoneta(self,matricula, conductor_id):
+        """Asignaa un conductor a una furgoneta ya registrada """
+        furgonetas = self.get_furgonetas()
+        updated = False
+        
+        with open(self.furgonetas_csv, 'w', newline='') as f:
+            writer = csv.DictWriter(f, fieldnames=['matricula', 'capacidad_maxima', 'provincia', 'envios_asignados', 'conductor'])
+            writer.writeheader()
+            
+            for furgoneta in furgonetas:
+                if furgoneta['matricula'] == matricula:
+                    furgoneta['conductor'] = str(conductor_id)
+                    updated = True
+                writer.writerow(furgoneta)
+        return updated
