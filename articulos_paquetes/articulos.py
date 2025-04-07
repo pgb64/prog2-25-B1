@@ -1,3 +1,4 @@
+import database.db as db
 class Articulo: #por ahora sin herenchia
     '''
     atrubutos
@@ -55,8 +56,9 @@ class Articulo: #por ahora sin herenchia
 
     def __init__(self,nombre,cantidad,proveedor,codigo,descripcion,procedencia):
         try:
-            if codigo not in basedatos.claves()???:
+            if codigo not in db.get_paquetes() :
                 self.__codigo=codigo # es necesario que sea único
+                
             else:
                 raise KeyError
         except:
@@ -71,6 +73,9 @@ class Articulo: #por ahora sin herenchia
                 type(self).dop(procedencia,self.__codigo)
             except:
                 print('Procedencia no válida')
+            else:
+                db.add_articulo(self.nombre,self.__codigo,self.proveedor,self.descripcion)
+                print('Articulo creado exitosamente')
         # csv!!!!!!
 
     @classmethod
