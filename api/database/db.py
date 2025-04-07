@@ -318,17 +318,7 @@ class Db:
         
         with open(self.repartidores_csv, 'a', newline='') as f:
             writer = csv.writer(f)
-            writer.writerow([
-                nombre,
-                str(new_id),
-                telefono,
-                provincia,
-                '', 
-                vehiculo,
-                'disponible',
-                '0' 
-            ])
-        
+            writer.writerow([nombre, str(new_id), telefono, provincia, '', vehiculo, 'disponible','0'])
         return new_id
     
     def get_repartidores(self):
