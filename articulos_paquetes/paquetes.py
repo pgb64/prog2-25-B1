@@ -1,4 +1,5 @@
 from articulos import Articulo
+import database.db as db
 '''
 atributos
 -------------------
@@ -53,4 +54,8 @@ class Paquete:
 
     def se_ha_enviado(self):
         self.enviado=True
-        # ???
+
+    def controlador_ver_paquete(self,id):
+        p=db.get_paquete_by_codigo(id)
+        print(p)
+        
