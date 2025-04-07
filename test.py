@@ -1,3 +1,18 @@
-from articulos_paquetes.articulos import Articulo
+from api import server
+import requests
+url = server.path
+ruta = server.path + '/get_all_data_public'
 
-p=Articulo('Prueba',2,'prueba',1036409817325,'pandemonium regnat','China')
+response = requests.get(ruta)
+
+code = response.status_code
+
+
+todo = response.json()
+data = todo.get('data')
+
+
+print(response)
+print(code)
+print(todo)
+print(data)
