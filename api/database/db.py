@@ -309,15 +309,7 @@ class Db:
 
 # --- Metodos para gestion de repartidores ---
     def add_repartidor(self, nombre, telefono, provincia, vehiculo):
-        """Añade un nuevo repartidor a la base de datos
-        Args:
-            nombre: Nombre completo del repartidor
-            telefono: Número de teléfono
-            provincia: Provincia donde opera
-            vehiculo: Tipo de vehículo que utiliza
-        Returns:
-            int: ID asignado al nuevo repartidor
-        """
+        """Añade un nuevo repartidor a la base de dato """
         repartidores = self.get_repartidores()
         
         # Generar nuevo ID
@@ -331,10 +323,10 @@ class Db:
                 str(new_id),
                 telefono,
                 provincia,
-                '',  # ubicacion_tiempo_real (inicialmente vacía)
+                '', 
                 vehiculo,
-                'disponible',  # estado inicial
-                '0'  # envios_asignados (inicialmente 0)
+                'disponible',
+                '0' 
             ])
         
         return new_id
