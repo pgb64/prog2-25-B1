@@ -2,23 +2,17 @@ import csv
 import os
 
 class Db:
-    """Gestor de base de datos CSV para usuarios y sus datos personales (Esta bastante crudo esto, segun me pidais puedo añadir nuevos metodos)
+    """Gestor de base de datos CSV para usuarios y sus datos personales
     
-    Esta clase proporciona una interfaz para gestionar usuarios y sus datos personale almacenados en archivos CSV. Usa dos archivos principales:
-    - usuarios.csv: Contiene credenciales y tipo de usuario
-    - datos_personales.csv: Almacena información personal de los usuarios
-    
-    Attributes
-    ----------
-    usuarios_csv : str
-        Ruta al archivo CSV de usuarios (data/usuarios.csv)
-    datos_csv : str
-        Ruta al archivo CSV de datos personales (data/datos_personales.csv)
+    Esta clase ahora devuelve códigos HTTP en sus operaciones:
+    - 200: OK
+    - 201: Creado
+    - 400: Error en la solicitud
+    - 404: No encontrado
+    - 409: Conflicto (ya existe)
     """
     
     def __init__(self):
-        """Inicializa todos los archivos CSV necesarios"""
-        # Rutas de los archivos
         self.usuarios_csv = 'data/usuarios.csv'
         self.datos_csv = 'data/datos_personales.csv'
         self.articulos_csv = 'data/articulos.csv'
@@ -28,7 +22,6 @@ class Db:
         
         os.makedirs('data', exist_ok=True)
         
-        # Archivos CSV y sus cabeceras
         archivos_config = {
             self.usuarios_csv: ['id', 'user', 'pass', 'type'],
             self.datos_csv: ['id', 'fecha', 'dir', 'cp', 'ciudad', 'genero'],
@@ -39,334 +32,376 @@ class Db:
             self.furgonetas_csv: ['matricula', 'capacidad_maxima', 'provincia', 'envios_asignados', 'conductor']
         }
         
-        # Bucle para inicializar los archivos CSV
         for archivo, campos in archivos_config.items():
             if not os.path.exists(archivo) or os.path.getsize(archivo) == 0:
                 with open(archivo, 'w', newline='') as f:
                     csv.writer(f).writerow(campos)
                     
-                    
-# ---- Métodos de gestion de usuarios ----
+    # ---- Métodos de gestión de usuarios ----
                     
     def add_user(self, user, password, tipo):
         """Registra un nuevo usuario en el sistema
         
-        Parameters
-        ----------
-        user : str
-            Nombre de usuario para registrar
-        password : str
-            Contraseña del usuario
-        tipo : str
-            Tipo de usuario (admin/repartidor/cliente)
-        
-        Returns
-        -------
-        int
-            ID asignado al nuevo usuario
+        Returns:
+            int: 201 si se creó, 409 si ya existe, 400 si hay error
         """
-        users = self.get_users()
-        new_id = len(users) + 1
-        with open(self.usuarios_csv, 'a', newline='') as f:
-            csv.writer(f).writerow([new_id, user, password, tipo])
-        return new_id
+        try:
+            if self.get_user(username=user):
+                return 409
+                
+            users = self.get_users()
+            new_id = len(users) + 1
+            with open(self.usuarios_csv, 'a', newline='') as f:
+                csv.writer(f).writerow([new_id, user, password, tipo])
+            return 201
+        except:
+            return 400
 
     def add_data(self, user_id, **data):
         """Guarda datos personales de un usuario
         
-        Parameters
-        ----------
-        user_id : int
-            ID del usuario al que pertenecen los datos
-        **data : dict
-            Datos personales a almacenar puesto con el **data para dar flexibilidad (Habria que cambiar los campos solo)
+        Returns:
+            int: 201 si se creó, 400 si hay error
         """
-        campos = ['id','fecha','dir','cp','ciudad','genero']
-        data['id'] = str(user_id)
-        
-        with open(self.datos_csv, 'a', newline='') as f:
-            writer = csv.DictWriter(f, fieldnames=campos)
-            writer.writerow({k: data.get(k, '') for k in campos})
+        try:
+            campos = ['id','fecha','dir','cp','ciudad','genero']
+            data['id'] = str(user_id)
+            
+            with open(self.datos_csv, 'a', newline='') as f:
+                writer = csv.DictWriter(f, fieldnames=campos)
+                writer.writerow({k: data.get(k, '') for k in campos})
+            return 201
+        except:
+            return 400
 
     def get_users(self):
         """Obtiene todos los usuarios registrados
         
-        Returns
-        -------
-        list
-            Lista de diccionarios con la información de cada usuario, con las claves: 'id', 'user', 'pass', 'type'
+        Returns:
+            list: Lista de usuarios o [] si hay error
         """
-        with open(self.usuarios_csv, 'r') as f:
-            return list(csv.DictReader(f))
+        try:
+            with open(self.usuarios_csv, 'r') as f:
+                return list(csv.DictReader(f))
+        except:
+            return []
 
     def get_data(self):
-        """Obtiene todos los datos personales almacenados
-        Returns
-        -------
-        list
-            Lista de diccionarios con los datos personales, con las claves: 'id', 'fecha', 'dir', 'cp', 'ciudad', 'genero'
+        """Obtiene todos los datos personales
+        
+        Returns:
+            list: Lista de datos o [] si hay error
         """
-        with open(self.datos_csv, 'r') as f:
-            return list(csv.DictReader(f))
+        try:
+            with open(self.datos_csv, 'r') as f:
+                return list(csv.DictReader(f))
+        except:
+            return []
 
     def get_user(self, user_id=None, username=None):
-        """Busca un usuari
+        """Busca un usuario
         
-        Parameters
-        ----------
-        user_id : int
-            ID del usuario a buscar
-        username : str
-            Nombre de usuario a buscar
-        
-        Returns
-        -------
-        dict or None
-            Diccionario con los datos del usuario si se encuentra,
-            None en caso contrario
+        Returns:
+            dict: Datos del usuario o None si no existe
         """
-        for user in self.get_users():
-            if user_id and user['id'] == str(user_id):
-                return user
-            if username and user['user'] == username:
-                return user
-        return None
+        try:
+            for user in self.get_users():
+                if user_id and user['id'] == str(user_id):
+                    return user
+                if username and user['user'] == username:
+                    return user
+            return None
+        except:
+            return None
 
     def get_user_data(self, user_id):
-        """Obtiene los datos personales de un usuario específico
-        Parameters
-        ----------
-        user_id : int
-            ID del usuario cuyos datos se buscan  
-        Returns
-        -------
-        dict or None
-            Diccionario con los datos personales si existen,
-            None en caso contrario
+        """Obtiene datos personales de un usuario
+        
+        Returns:
+            dict: Datos personales o None si no existen
         """
-        for data in self.get_data():
-            if data['id'] == str(user_id):
-                return data
-        return None
+        try:
+            for data in self.get_data():
+                if data['id'] == str(user_id):
+                    return data
+            return None
+        except:
+            return None
 
     def get_data_field(self, user_id, field):
-        """Obtiene un campo específico de los datos personales de un usuario
+        """Obtiene un campo específico de datos personales
         
-        Parameters
-        ----------
-        user_id : int
-            ID del usuario
-        field : str
-            Nombre del campo a recuperar
-        Returns
-        -------
-        str or None
-            Valor del campo si existe,
-            None en caso contrario
+        Returns:
+            str: Valor del campo o None si no existe
         """
         data = self.get_user_data(user_id)
-        if data and field in data:
-            return data[field]
-        return None
+        return data.get(field) if data else None
 
     def get_by_type(self, user_type):
-        """Filtra usuarios por tipo (admin/repartidor/cliente)
+        """Filtra usuarios por tipo
         
-        Parameters
-        ----------
-        user_type : str
-            Tipo de usuario a filtrar
-        Returns
-        -------
-        list[dict]
-            Lista de usuarios que coinciden con el tipo especificado
+        Returns:
+            list: Usuarios del tipo especificado o [] si no hay
         """
-        return [u for u in self.get_users() if u['type'] == user_type]
+        try:
+            return [u for u in self.get_users() if u['type'] == user_type]
+        except:
+            return []
 
     def get_by_city(self, city):
-        """Filtra usuarios por ciudad de residencia
+        """Filtra usuarios por ciudad
         
-        Parameters
-        ----------
-        city : str
-            Ciudad por la que filtrar (búsqueda no sensible a mayúsculas)
-        Returns
-        -------
-        list[dict]
-            Lista de diccionarios con estructura:
-            {'user': datos_usuario, 'data': datos_personales}
+        Returns:
+            list: Usuarios en la ciudad o [] si no hay
         """
-        results = []
-        for data in self.get_data():
-            if data['ciudad'].lower() == city.lower():
-                user = self.get_user(user_id=data['id'])
-                results.append({'user': user, 'data': data})
-        return results
+        try:
+            results = []
+            for data in self.get_data():
+                if data['ciudad'].lower() == city.lower():
+                    user = self.get_user(user_id=data['id'])
+                    if user:
+                        results.append({'user': user, 'data': data})
+            return results
+        except:
+            return []
 
     def login(self, user, password):
         """Valida credenciales de acceso
         
-        Parameters
-        ----------
-        user : str
-            Nombre de usuario
-        password : str
-            Contraseña
-        Returns
-        -------
-        dict or None
-            Datos del usuario si las credenciales son válidas,
-            None en caso contrario
+        Returns:
+            dict: Datos del usuario si credenciales válidas, None si no
         """
         user_data = self.get_user(username=user)
-        if user_data and user_data['pass'] == password:
-            return user_data
-        return None
+        return user_data if (user_data and user_data['pass'] == password) else None
 
     def is_admin(self, user):
-        """Comprueba si un usuario tiene privilegios de administrador
+        """Comprueba si un usuario es admin
         
-        Parameters
-        ----------
-        user : dict
-            Diccionario con los datos del usuario
-            (debe contener 'user' y 'pass')
-        
-        Returns
-        -------
-        bool
-            True si el usuario es administrador,
-            False en caso contrario
+        Returns:
+            bool: True si es admin, False si no
         """
         user_data = self.login(user['user'], user['pass'])
         return user_data and user_data['type'] == 'admin'
     
-# ---- Métodos de gestion de articulos ----
+    # ---- Métodos de gestión de artículos ----
     def add_articulo(self, nombre, codigo, cantidad, proveedor, descripcion):
-        """Añade un nuevo articulo al sistema"""
-        with open(self.articulos_csv, 'a', newline='') as f:
-            csv.writer(f).writerow([nombre, codigo, cantidad, proveedor, descripcion])
+        """Añade un nuevo artículo
+        
+        Returns:
+            int: 201 si se creó, 400 si hay error
+        """
+        try:
+            if self.get_articulo_codigo(codigo):
+                return 409
+                
+            with open(self.articulos_csv, 'a', newline='') as f:
+                csv.writer(f).writerow([nombre, codigo, cantidad, proveedor, descripcion])
+            return 201
+        except:
+            return 400
             
     def get_articulos(self):
-        """Obtiene todos los articulos"""
-        with open(self.articulos_csv, 'r') as f:
-            return list(csv.DictReader(f))
+        """Obtiene todos los artículos
+        
+        Returns:
+            list: Artículos o [] si hay error
+        """
+        try:
+            with open(self.articulos_csv, 'r') as f:
+                return list(csv.DictReader(f))
+        except:
+            return []
     
     def get_articulo_codigo(self, codigo):
-        """Obtiene un articulo especifico por su codigo"""
-        for articulo in self.get_articulos(): #Sacamos los articulos con la funcion para obtenerlos todos
-            if articulo['codigo'] == codigo:
-                return articulo
-        return None
+        """Obtiene artículo por código
+        
+        Returns:
+            dict: Datos del artículo o None si no existe
+        """
+        try:
+            for articulo in self.get_articulos():
+                if articulo['codigo'] == codigo:
+                    return articulo
+            return None
+        except:
+            return None
     
-    
-
-# ---- Métodos de gestion de paquetes ----
+    # ---- Métodos de gestión de paquetes ----
     def add_paquete(self, nombre, codigo_envio, procedencia, usuario_receptor, enviado):
-        """Registramos un nuevo paquete (El tema booleano me ha dado muchos problemas al leerlo luego 
-        asi que lo guardo como string, si alguien sabe como hacerlo mejor que me lo diga)"""
-        if  enviado:   
-            enviado_s = 'True'
-        else:
-            enviado_s = 'False'
-        with open(self.paquetes_csv, 'a') as f:
-            csv.writer(f).writerow([nombre, codigo_envio, procedencia, usuario_receptor, enviado_s]) 
+        """Añade un nuevo paquete
+        
+        Returns:
+            int: 201 si se creó, 400 si hay error
+        """
+        try:
+            if self.get_paquete_by_codigo(codigo_envio):
+                return 409
+                
+            enviado_s = 'True' if enviado else 'False'
+            with open(self.paquetes_csv, 'a') as f:
+                csv.writer(f).writerow([nombre, codigo_envio, procedencia, usuario_receptor, enviado_s]) 
+            return 201
+        except:
+            return 400
             
     def get_paquetes(self):
-        """Obtiene los paquetes ya registrados"""
-        with open(self.paquetes_csv, 'r') as f:
-            paquetes = list(csv.DictReader(f))
-        #Convertimos enviado a booleano
-        for paquete in paquetes:
-            paquete['enviado'] = paquete['enviado'] == 'True'
-        return paquetes
+        """Obtiene todos los paquetes
+        
+        Returns:
+            list: Paquetes o [] si hay error
+        """
+        try:
+            with open(self.paquetes_csv, 'r') as f:
+                paquetes = list(csv.DictReader(f))
+            for paquete in paquetes:
+                paquete['enviado'] = paquete['enviado'] == 'True'
+            return paquetes
+        except:
+            return []
     
     def get_paquete_by_codigo(self, codigo_envio):
-        """Obtiene un paquete especifico por su codigo"""
-        for paquete in self.get_paquetes():
-            if paquete['codigo_envio'] == codigo_envio:
-                return paquete
-        return None
+        """Obtiene paquete por código
+        
+        Returns:
+            dict: Datos del paquete o None si no existe
+        """
+        try:
+            for paquete in self.get_paquetes():
+                if paquete['codigo_envio'] == codigo_envio:
+                    return paquete
+            return None
+        except:
+            return None
     
     def update_estado_envio(self, codigo_envio, enviado):
-        """ACtualiz el estado de un envio de paquete"""
-        paquetes = self.get_paquetes()
-        updated = False
+        """Actualiza estado de envío
         
-        with open(self.paquetes_csv, 'w', newline='') as f:
-            # Corregido: pasar una lista de fieldnames en lugar de intentar indexar
-            fieldnames = ['nombre', 'codigo_envio', 'procedencia', 'usuario_receptor', 'enviado']
-            writer = csv.DictWriter(f, fieldnames=fieldnames)
-            writer.writeheader()
-
-            for paquete in paquetes:
-                if paquete['codigo_envio'] == str(codigo_envio):
-                    paquete['enviado'] = 'True' if enviado else 'False'
-                    updated = True
-                writer.writerow(paquete)
-        return updated
+        Returns:
+            int: 200 si se actualizó, 404 si no existe, 400 si hay error
+        """
+        try:
+            paquetes = self.get_paquetes()
+            updated = False
             
+            with open(self.paquetes_csv, 'w', newline='') as f:
+                fieldnames = ['nombre', 'codigo_envio', 'procedencia', 'usuario_receptor', 'enviado']
+                writer = csv.DictWriter(f, fieldnames=fieldnames)
+                writer.writeheader()
 
-# --- Metodos para gestion de repartidores ---
+                for paquete in paquetes:
+                    if paquete['codigo_envio'] == str(codigo_envio):
+                        paquete['enviado'] = 'True' if enviado else 'False'
+                        updated = True
+                    writer.writerow(paquete)
+                    
+            return 200 if updated else 404
+        except:
+            return 400
+
+    # --- Métodos para gestión de repartidores ---
     def add_repartidor(self, nombre, telefono, provincia, vehiculo):
-        """Añade un nuevo repartidor a la base de dato """
-        repartidores = self.get_repartidores()
+        """Añade un nuevo repartidor
         
-        # Generar nuevo ID
-        existing_ids = [int(r['id']) for r in repartidores if r['id'].isdigit()]
-        new_id = max(existing_ids) + 1 if existing_ids else 1
-        
-        with open(self.repartidores_csv, 'a', newline='') as f:
-            writer = csv.writer(f)
-            writer.writerow([nombre, str(new_id), telefono, provincia, '', vehiculo, 'disponible','0'])
-        return new_id
+        Returns:
+            int: 201 si se creó, 400 si hay error
+        """
+        try:
+            repartidores = self.get_repartidores()
+            existing_ids = [int(r['id']) for r in repartidores if r['id'].isdigit()]
+            new_id = max(existing_ids) + 1 if existing_ids else 1
+            
+            with open(self.repartidores_csv, 'a', newline='') as f:
+                writer = csv.writer(f)
+                writer.writerow([nombre, str(new_id), telefono, provincia, '', vehiculo, 'disponible','0'])
+            return 201
+        except:
+            return 400
     
     def get_repartidores(self):
-        """Obtiene todos los repartidoress"""
-        with open(self.repartidores_csv, 'r')as f:
-            return list(csv.DictReader(f))
+        """Obtiene todos los repartidores
+        
+        Returns:
+            list: Repartidores o [] si hay error
+        """
+        try:
+            with open(self.repartidores_csv, 'r') as f:
+                return list(csv.DictReader(f))
+        except:
+            return []
     
     def update_ubicacion_repartidor(self, repartidor_id, ubicacion):
-        """Actualiza la ubicacion en tiempo real de un repartidor"""
-        repartidores = self.get_repartidores()
-        updated = False
+        """Actualiza ubicación de repartidor
+        
+        Returns:
+            int: 200 si se actualizó, 404 si no existe, 400 si hay error
+        """
+        try:
+            repartidores = self.get_repartidores()
+            updated = False
 
-        with open(self.repartidores_csv, 'w', newline='') as f:
-            writer = csv.DictWriter(f, fieldnames=['nombre', 'id', 'telefono', 'provincia', 'ubicacion_tiempo_real', 'vehiculo', 'estado', 'envios_asignados'])
-            writer.writeheader()
+            with open(self.repartidores_csv, 'w', newline='') as f:
+                writer = csv.DictWriter(f, fieldnames=['nombre', 'id', 'telefono', 'provincia', 'ubicacion_tiempo_real', 'vehiculo', 'estado', 'envios_asignados'])
+                writer.writeheader()
 
-            for repartidor in repartidores:
-                if repartidor['id'] == str(repartidor_id):
-                    repartidor['ubicacion_tiempo_real'] = ubicacion
-                    updated = True
-                writer.writerow(repartidor)
+                for repartidor in repartidores:
+                    if repartidor['id'] == str(repartidor_id):
+                        repartidor['ubicacion_tiempo_real'] = ubicacion
+                        updated = True
+                    writer.writerow(repartidor)
 
-        return updated
+            return 200 if updated else 404
+        except:
+            return 400
 
-# --- Metodos para la clase Furgonetas ---
+    # --- Métodos para gestión de furgonetas ---
     def add_furgoneta(self, matricula, capacidad_maxima, provincia, conductor):
-        """Añade una furgoneta a la base de datos"""
-        with open(self.furgonetas_csv, 'a', newline='') as f:
-            csv.writer(f).writerow([matricula, str(capacidad_maxima), provincia, '0', conductor])
+        """Añade una furgoneta
+        
+        Returns:
+            int: 201 si se creó, 409 si ya existe, 400 si hay error
+        """
+        try:
+            for f in self.get_furgonetas():
+                if f['matricula'] == matricula:
+                    return 409
+                    
+            with open(self.furgonetas_csv, 'a', newline='') as f:
+                csv.writer(f).writerow([matricula, str(capacidad_maxima), provincia, '0', conductor])
+            return 201
+        except:
+            return 400
     
     def get_furgonetas(self):
-        """Obtiene la informacion de todas las furgonetas"""
-        with open(self.furgonetas_csv, 'r') as f:
-            return list(csv.DictReader(f))
+        """Obtiene todas las furgonetas
         
-    def asignar_conductor_furgoneta(self,matricula, conductor_id):
-        """Asignaa un conductor a una furgoneta ya registrada """
-        furgonetas = self.get_furgonetas()
-        updated = False
+        Returns:
+            list: Furgonetas o [] si hay error
+        """
+        try:
+            with open(self.furgonetas_csv, 'r') as f:
+                return list(csv.DictReader(f))
+        except:
+            return []
         
-        with open(self.furgonetas_csv, 'w', newline='') as f:
-            writer = csv.DictWriter(f, fieldnames=['matricula', 'capacidad_maxima', 'provincia', 'envios_asignados', 'conductor'])
-            writer.writeheader()
+    def asignar_conductor_furgoneta(self, matricula, conductor_id):
+        """Asigna conductor a furgoneta
+        
+        Returns:
+            int: 200 si se actualizó, 404 si no existe, 400 si hay error
+        """
+        try:
+            furgonetas = self.get_furgonetas()
+            updated = False
             
-            for furgoneta in furgonetas:
-                if furgoneta['matricula'] == matricula:
-                    furgoneta['conductor'] = str(conductor_id)
-                    updated = True
-                writer.writerow(furgoneta)
-        return updated
-
+            with open(self.furgonetas_csv, 'w', newline='') as f:
+                writer = csv.DictWriter(f, fieldnames=['matricula', 'capacidad_maxima', 'provincia', 'envios_asignados', 'conductor'])
+                writer.writeheader()
+                
+                for furgoneta in furgonetas:
+                    if furgoneta['matricula'] == matricula:
+                        furgoneta['conductor'] = str(conductor_id)
+                        updated = True
+                    writer.writerow(furgoneta)
+            return 200 if updated else 404
+        except:
+            return 400
