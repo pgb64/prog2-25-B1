@@ -183,6 +183,60 @@ class Db:
         user_data = self.login(user['user'], user['pass'])
         return user_data and user_data['type'] == 'admin'
     
+
+    def delete_user(self, user_id):
+        """Elimina un usuario del sistema
+        
+        Returns:
+            int: 200 si se eliminó, 404 si no existe, 400 si hay error
+        """
+        try:
+            users = self.get_users()
+            updated = False
+            
+            with open(self.usuarios_csv, 'w', newline='') as f:
+                writer = csv.DictWriter(f, fieldnames=['id', 'user', 'pass', 'type'])
+                writer.writeheader()
+                
+                for user in users:
+                    if user['id'] != str(user_id):
+                        writer.writerow(user)
+                    else:
+                        updated = True
+            
+            # Si se eliminó el usuario, también eliminamos sus datos personales
+            if updated:
+                self.delete_user_data(user_id)
+                return 200
+            return 404
+        except:
+            return 400
+
+
+    def delete_user_data(self, user_id):
+        """Elimina los datos personales de un usuario
+        
+        Returns:
+            int: 200 si se eliminó, 404 si no existe, 400 si hay error
+        """
+        try:
+            data_list = self.get_data()
+            updated = False
+            
+            with open(self.datos_csv, 'w', newline='') as f:
+                writer = csv.DictWriter(f, fieldnames=['id', 'fecha', 'dir', 'cp', 'ciudad', 'genero'])
+                writer.writeheader()
+                
+                for data in data_list:
+                    if data['id'] != str(user_id):
+                        writer.writerow(data)
+                    else:
+                        updated = True
+            
+            return 200 if updated else 404
+        except:
+            return 400
+    
     # ---- Métodos de gestión de artículos ----
     def add_articulo(self, nombre, codigo, cantidad, proveedor, descripcion):
         """Añade un nuevo artículo
@@ -225,6 +279,44 @@ class Db:
             return None
         except:
             return None
+
+    def get_codigos_articulos(self):
+        try:
+            articulos = self.get_articulos()
+            codigos = []
+            
+            for articulo in articulos:
+                if 'codigo' in articulo:
+                    codigos.append(articulo['codigo'])
+            
+            return codigos
+        except:
+            return []
+
+
+    def delete_articulo(self, codigo):
+        """Elimina un artículo del inventario
+        
+        Returns:
+            int: 200 si se eliminó, 404 si no existe, 400 si hay error
+        """
+        try:
+            articulos = self.get_articulos()
+            updated = False
+            
+            with open(self.articulos_csv, 'w', newline='') as f:
+                writer = csv.DictWriter(f, fieldnames=['nombre', 'codigo', 'cantidad', 'proveedor', 'descripcion'])
+                writer.writeheader()
+                
+                for articulo in articulos:
+                    if articulo['codigo'] != codigo:
+                        writer.writerow(articulo)
+                    else:
+                        updated = True
+            
+            return 200 if updated else 404
+        except:
+            return 400
     
     # ---- Métodos de gestión de paquetes ----
     def add_paquete(self, nombre, codigo_envio, procedencia, usuario_receptor, enviado):
@@ -298,6 +390,48 @@ class Db:
         except:
             return 400
 
+
+    def get_codigos_paquetes(self, enviado=None):
+        try:
+            paquetes = self.get_paquetes()
+            codigos = []
+            
+            for paquete in paquetes:
+                if 'codigo_envio' in paquete:
+                    if enviado is None or paquete['enviado'] == enviado:
+                        codigos.append(paquete['codigo_envio'])
+            
+            return codigos
+        except:
+            return []
+
+
+    def delete_paquete(self, codigo_envio):
+        """Elimina un paquete del sistema
+        
+        Returns:
+            int: 200 si se eliminó, 404 si no existe, 400 si hay error
+        """
+        try:
+            paquetes = self.get_paquetes()
+            updated = False
+            
+            with open(self.paquetes_csv, 'w', newline='') as f:
+                writer = csv.DictWriter(f, fieldnames=['nombre', 'codigo_envio', 'procedencia', 'usuario_receptor', 'enviado'])
+                writer.writeheader()
+                
+                for paquete in paquetes:
+                    if paquete['codigo_envio'] != codigo_envio:
+                        # Convertimos el booleano a string para guardarlo
+                        paquete['enviado'] = 'True' if paquete['enviado'] else 'False'
+                        writer.writerow(paquete)
+                    else:
+                        updated = True
+            
+            return 200 if updated else 404
+        except:
+            return 400
+
     # --- Métodos para gestión de repartidores ---
     def add_repartidor(self, nombre, telefono, provincia, vehiculo):
         """Añade un nuevo repartidor
@@ -352,6 +486,31 @@ class Db:
             return 200 if updated else 404
         except:
             return 400
+        
+        
+    def delete_repartidor(self, repartidor_id):
+        """Elimina un repartidor del sistema
+        
+        Returns:
+            int: 200 si se eliminó, 404 si no existe, 400 si hay error
+        """
+        try:
+            repartidores = self.get_repartidores()
+            updated = False
+            
+            with open(self.repartidores_csv, 'w', newline='') as f:
+                writer = csv.DictWriter(f, fieldnames=['nombre', 'id', 'telefono', 'provincia', 'ubicacion_tiempo_real', 'vehiculo', 'estado', 'envios_asignados'])
+                writer.writeheader()
+                
+                for repartidor in repartidores:
+                    if repartidor['id'] != str(repartidor_id):
+                        writer.writerow(repartidor)
+                    else:
+                        updated = True
+            
+            return 200 if updated else 404
+        except:
+            return 400
 
     # --- Métodos para gestión de furgonetas ---
     def add_furgoneta(self, matricula, capacidad_maxima, provincia, conductor):
@@ -402,6 +561,31 @@ class Db:
                         furgoneta['conductor'] = str(conductor_id)
                         updated = True
                     writer.writerow(furgoneta)
+            return 200 if updated else 404
+        except:
+            return 400
+
+
+    def delete_furgoneta(self, matricula):
+        """Elimina una furgoneta del sistema
+        
+        Returns:
+            int: 200 si se eliminó, 404 si no existe, 400 si hay error
+        """
+        try:
+            furgonetas = self.get_furgonetas()
+            updated = False
+            
+            with open(self.furgonetas_csv, 'w', newline='') as f:
+                writer = csv.DictWriter(f, fieldnames=['matricula', 'capacidad_maxima', 'provincia', 'envios_asignados', 'conductor'])
+                writer.writeheader()
+                
+                for furgoneta in furgonetas:
+                    if furgoneta['matricula'] != matricula:
+                        writer.writerow(furgoneta)
+                    else:
+                        updated = True
+            
             return 200 if updated else 404
         except:
             return 400
