@@ -3,7 +3,7 @@ class Furgoneta:
     Clase que representa una furgoneta utilizada para el reparto de envíos.
     """
 
-    def __init__(self, matricula, capacidad_maxima, provincia):
+    def __init__(self, matricula, conductor, capacidad_maxima, provincia):
         """
         Inicializa una furgoneta con sus características principales.
 
@@ -15,6 +15,7 @@ class Furgoneta:
         self.capacidad_maxima = capacidad_maxima
         self.provincia = provincia
         self.envios_asignados = []
+        self.conductor = conductor
 
     def asignar_envio(self, envio):
         """Asigna un envío a la furgoneta si tiene capacidad disponible."""
