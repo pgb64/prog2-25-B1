@@ -1,4 +1,4 @@
-from sistema.servidor import Server
+from sistema import Server
 
 if __name__ == "__main__":
     launcher = Server()

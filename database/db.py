@@ -1,6 +1,9 @@
 import csv
 import os
 import bcrypt
+import pandas as pd
+from database.security import Security
+
 
 class Db:
     """Gestor de base de datos CSV para users y sus datos personales
@@ -41,23 +44,36 @@ class Db:
                 with open(archivo, 'w', newline='') as f:
                     csv.writer(f).writerow(campos)
                     
+
+
+
     # ---- Métodos de gestión de usuarios ----
                     
     def add_user(self, user: str, password: str, tipo: str) -> int:
-        """Registra un nuevo user con contraseña hasheada"""
+        """Registra un nuevo usuario con contraseña hasheada y verifica la fortaleza de la contraseña."""
         try:
+            # Verificar si la contraseña cumple con los requisitos de seguridad
+            password_strength = Security.check_password_strength(password)
+            if password_strength == 401:
+                return 401  # Contraseña inválida
+
+            # Verificar si el usuario ya existe
             if self.get_user(username=user):
                 return 409  # Conflicto: ya existe
-                
+
+            # Generar el nuevo ID del usuario
             users = self.get_users()
             new_id = len(users) + 1
+
+            # Hashear la contraseña utilizando la clase Security
+            hashed_pw = Security.hash_password(password)
             
-            # Hash de la contraseña con bcrypt
-            hashed_pw = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
-            
+            # Registrar el usuario en el archivo CSV
             with open(self.users_csv, 'a', newline='') as f:
-                csv.writer(f).writerow([new_id, user, hashed_pw.decode('utf-8'), tipo])
-            return 201  # Creado
+                csv.writer(f).writerow([new_id, user, hashed_pw, tipo])
+
+            return 201  # Usuario creado con éxito
+
         except Exception as e:
             print(f"Error al añadir user: {e}")
             return 400  # Error
@@ -158,16 +174,26 @@ class Db:
         except:
             return []
 
-    def login(self, user: str, password: str) -> Optional[dict]:
-        """Valida credenciales usando bcrypt"""
+    def login(self, user: str, password: str):
+        """Verifica las credenciales de un usuario y la validez de la contraseña."""
+        
+        # Obtener los datos del usuario
         user_data = self.get_user(username=user)
-        if not user_data:
-            return None
-            
-        # Verificar contraseña hasheada
-        if bcrypt.checkpw(password.encode('utf-8'), user_data['password'].encode('utf-8')):
-            return user_data
-        return None
+        if user_data is None:
+            return 400  # Usuario no encontrado
+
+        # Verificar la fortaleza de la contraseña utilizando la clase Security
+        password_strength = Security.check_password_strength(password)
+        if password_strength == 401:
+            return 401  # Contraseña inválida (no cumple los requisitos)
+
+        # Verificar que la contraseña coincida con la almacenada en la base de datos
+        hashed_password = user_data['password']
+        if not Security.verify_password(password, hashed_password):
+            return 401  # Contraseña incorrecta
+
+        return 200  # Login exitoso
+
 
     def is_admin(self, user):
         """Comprueba si un usuario es admin
@@ -304,6 +330,12 @@ class Db:
         except:
             return 400
     
+
+
+
+
+
+
     # ---- Métodos de gestión de paquetes ----
     def add_paquete(self, nombre, codigo_envio, procedencia, usuario_receptor, enviado):
         """Añade un nuevo paquete
@@ -575,3 +607,16 @@ class Db:
             return 200 if updated else 404
         except:
             return 400
+
+
+class Security:
+    
+    @staticmethod
+    def hash_password(password):
+        KEY = Security.get_key().encode('utf-8')
+        hash = bcrypt.hashpw(password.encode('utf-8'), bcrypt.hashpw(KEY, bcrypt.gensalt()))
+        return hash.decode('utf-8')
+    
+    @staticmethod
+    def verify_password(password, hash):
+        return bcrypt.checkpw(password.encode(), hash.encode())

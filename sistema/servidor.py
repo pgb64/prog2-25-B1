@@ -6,7 +6,6 @@ class Server(ApiResponse):
     def __init__(self):
         super().__init__()  
         self.path = self.path 
-        self.routes() 
 
     @classmethod
     def get_state(cls, path):
