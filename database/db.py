@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import csv, bcrypt, os
 from dotenv import load_dotenv
 import pandas as pd
@@ -676,4 +675,3 @@ class Db:
             return 200 if updated else 404
         except:
             return 400
->>>>>>> base-datos(Andres)
