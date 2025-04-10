@@ -1,4 +1,4 @@
-import database.db as db
+#import database.db as db
 class Articulo: #por ahora sin herenchia
     '''
     atrubutos
@@ -56,10 +56,10 @@ class Articulo: #por ahora sin herenchia
 
     def __init__(self,nombre,cantidad,proveedor,codigo,descripcion,procedencia):
         try:
-            if codigo not in db.get_paquetes() :
+            if codigo not in [1,2,3]: #db.Db.get_codigos_articulos() :
                 self.__codigo=codigo # es necesario que sea único
                 
-            else:
+            elif codigo in db.Db.get_codigos_articulos():
                 raise KeyError
         except:
             print('ERROR: Código duplicado')
@@ -74,16 +74,15 @@ class Articulo: #por ahora sin herenchia
             except:
                 print('Procedencia no válida')
             else:
-                db.DB.add_articulo(self.nombre,self.__codigo,self.proveedor,self.descripcion)
+                #db.Db.add_articulo(self.nombre,self.__codigo,self.proveedor,self.descripcion)
                 print('Articulo creado exitosamente')
-        # csv!!!!!!
-
+    
     @classmethod
     def dop(cls,procedencia,cod):
         if not isinstance(procedencia,str):
             raise ValueError
         else:
-            cls.dicc_proced[procedencia].append(cod)
+            cls.dicc_proced[procedencia]=cod
     
     def __str__(self):
         return f'{self.nombre} ({self.mostrar_codigo()}): {self.cantidad} unidades en total. Distribuido por {self.proveedor} desde {self.procedencia}'
@@ -97,6 +96,7 @@ class Articulo: #por ahora sin herenchia
         self.proveedor=proveedor
         
     def eliminar_producto(self): # esto solo podrá hacerlo quén haya subido el artículo
+        db.Db.delete_articulo(self.mostrar_codigo())
         del self
 
     def pedir_paquete(self,usuario):
@@ -110,4 +110,15 @@ class Articulo: #por ahora sin herenchia
 
         else:
             print('No quedan artículos de este tipo')
-            
+
+def controlador_crear_articulo(nombre,cantidad,proveedor,codigo,descripcion,procedencia):
+        return Articulo(nombre,cantidad,proveedor,codigo,descripcion,procedencia)
+    
+def controlador_ver_articulo(articulo):
+    try:
+        if not isinstance(articulo,Articulo):
+            raise TypeError
+        else:
+            print(articulo)
+    except:
+        print('lo que se desea ver no es un articulo')
