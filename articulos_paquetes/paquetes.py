@@ -28,6 +28,12 @@ __str__():
 se_ha_enviado():
 
     este método pone a True el atributo enviado cuando el usuario reciba el paquete.
+
+mostrar_codigo():
+
+    este método muestra el atributo privado código
+
+funciones 
     
 '''
 class Paquete:
