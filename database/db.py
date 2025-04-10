@@ -353,7 +353,7 @@ class Db:
             print(f"Error al buscar paquete: {e}")
             return None
 
-    def get_codigos_paquetes(self, enviado=None):
+    def get_codigos_paquetes(self):
         try:
             paquetes = self.get_paquetes()
             codigos = []
