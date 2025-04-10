@@ -3,11 +3,11 @@ Trabajo de prog-2 sistema de gestión de reparto.
 
 ## Autores
 
-* (Coordinador) [Nombre 1 Apellido 1 Apellido 1](https://github.com/alumno1)
+* (Coordinador) [Pablo García Beltrá](https://github.com/pgb64)
 * [Andrés Segurado Climent](https://github.com/Bonew24)
 * [Jorge Izquierdo Baeza](https://github.com/jorgeizquierdo-git)
-* [Alejandro Párraga Sánchez](https://github.com/w4lexf)
-* [Nombre 5 Apellido 5 Apellido 5](https://github.com/alumno5)
+* [Guillermo Espinosa Ruiz](https://github.com/ruukhaUA)
+* [Alejandro Parraga Sanchez](https://github.com/w4lexf)
 
 ## Profesor
 [//]: # [Miguel A. Teruel](https://github.com/materuel-ua)
