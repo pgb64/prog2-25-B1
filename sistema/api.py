@@ -13,6 +13,10 @@ class ApiResponse:
         self.routes()
     
     def routes(self):
+        @self.app.route('/', methods=['GET'])
+        def home():
+            return jsonify({'message': 'Servidor de TuPaquete activado'}), 200
+
         @self.app.route('/signup', methods=['POST'])
         def signup():
             data = request.get_json()
