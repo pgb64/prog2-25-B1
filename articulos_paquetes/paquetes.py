@@ -17,6 +17,10 @@ enviado: bool
 
     Booleano que define si un paquete ha sido enviado o no
     
+contenido: str
+
+    id del artículo que va en un paquete
+    
 métodos
 --------------------
 __init__():
@@ -35,9 +39,15 @@ mostrar_codigo():
 
     este método muestra el atributo privado código
 
-funciones 
+funciones
+-----------------------
+controlador_crear_paquete():
+
+    crea un paquete dados sus atributos
     
-    
+controlador_ver_paquete():
+
+    musetra los datos de un paquete dado su id
     
 '''
 
@@ -72,20 +82,6 @@ class Paquete:
         
     def mostrar_codigo(self):
         return self.__codigo_paquete
-
-    def controlador_ver_paquete(self,id_paquete: str):
-        p=db.get_paquete_by_codigo(id_paquete)
-        print(p)
-        
-def controlador_agregar_articulo(paquete: Paquete ,id_articulo: str):
-    try:
-        if id_articulo in codigos_articulos:
-            a=db.Db.get_articulo_codigo(id_articulo)
-            paquete.contenido=id_articulo
-        else:
-            raise ValueError
-    except:
-        print('El id del articulo no existe')
     
 def controlador_crear_paquete(codigo_paquete: str,direccion: str,usuario: str ,contenido: str):
         return Paquete(codigo_paquete,direccion,usuario,contenido)
