@@ -5,20 +5,7 @@ import pandas as pd
 from database.security import Security
 
 
-class Db:
-    """Gestor de base de datos CSV para users y sus datos personales
-    
-    Esta clase ahora:
-    - Usa bcrypt para hashing de contraseñas
-    - Archivos renombrados: users.csv y personal.csv
-    - Devuelve códigos HTTP en sus operaciones:
-      - 200: OK
-      - 201: Creado
-      - 400: Error en la solicitud
-      - 404: No encontrado
-      - 409: Conflicto (ya existe)
-    """
-    
+class Db:   
     def __init__(self):
         self.users_csv = 'data/users.csv'
         self.personal_csv = 'data/personal.csv'
