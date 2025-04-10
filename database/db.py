@@ -323,7 +323,7 @@ class Db:
             return 400
 
     # ---- Métodos de gestión de paquetes ----
-    def add_paquete(self, nombre, codigo_envio, procedencia, usuario_receptor, enviado):
+    def add_paquete(self, codigo_paquete, direccion, usuario, contenido):
         try:
             if self.get_paquete_by_codigo(codigo_paquete):
                 return 409
@@ -343,7 +343,7 @@ class Db:
             print(f"Error al obtener paquetes: {e}")
             return []
     
-    def get_paquete_by_codigo(self, codigo_envio):
+    def get_paquete_by_codigo(self, codigo_paquete):
         try:
             for paquete in self.get_paquetes():
                 if paquete['codigo_paquete'] == codigo_paquete:
@@ -352,47 +352,23 @@ class Db:
         except Exception as e:
             print(f"Error al buscar paquete: {e}")
             return None
-    
-    def update_estado_envio(self, codigo_envio, enviado):
-        try:
-            paquetes = self.get_paquetes()
-            updated = False
-            
-            with open(self.paquetes_csv, 'w', newline='') as f:
-                writer = csv.DictWriter(f, fieldnames=['codigo_paquete', 'direccion', 'usuario', 'contenido'])
-                writer.writeheader()
-    
-                for paquete in paquetes:
-                    if paquete['codigo_paquete'] == codigo_paquete:
-                        if direccion is not None:
-                            paquete['direccion'] = direccion
-                        if usuario is not None:
-                            paquete['usuario'] = usuario
-                        if contenido is not None:
-                            paquete['contenido'] = contenido
-                        updated = True
-                    writer.writerow(paquete)
-                    
-            return 200 if updated else 404
-        except Exception as e:
-            print(f"Error al actualizar paquete: {e}")
-            return 400
 
-    def get_codigos_paquetes(self, enviado=None):
+    def get_codigos_paquetes(self):
         try:
             paquetes = self.get_paquetes()
             codigos = []
             
             for paquete in paquetes:
-                if 'codigo_envio' in paquete:
-                    if enviado is None or paquete['enviado'] == enviado:
-                        codigos.append(paquete['codigo_envio'])
-            
+                if 'codigo_paquete' in paquete:
+                    codigo = paquete['codigo_paquete']
+                    codigos.append(codigo)
+                    
             return codigos
-        except:
+            
+        except Exception:
             return []
 
-    def delete_paquete(self, codigo_envio):
+    def delete_paquete(self, codigo_paquete):
         try:
             paquetes = self.get_paquetes()
             updated = False

@@ -1,4 +1,5 @@
-#import database.db as db
+from database.db import Db
+db=Db()
 class Articulo: #por ahora sin herenchia
     '''
     atrubutos
@@ -54,12 +55,13 @@ class Articulo: #por ahora sin herenchia
 
     dicc_proced = {}
 
-    def __init__(self,nombre,cantidad,proveedor,codigo,descripcion,procedencia):
+    def __init__(self,nombre: str,cantidad: int,proveedor: str,codigo: str,descripcion: str,procedencia: str):
         try:
-            if codigo not in [1,2,3]: #db.Db.get_codigos_articulos() :
+            if codigo not in db.get_codigos_articulos():
+                
                 self.__codigo=codigo # es necesario que sea único
                 
-            elif codigo in db.Db.get_codigos_articulos():
+            elif codigo in db.get_codigos_articulos():
                 raise KeyError
         except:
             print('ERROR: Código duplicado')
@@ -74,7 +76,7 @@ class Articulo: #por ahora sin herenchia
             except:
                 print('Procedencia no válida')
             else:
-                #db.Db.add_articulo(self.nombre,self.__codigo,self.proveedor,self.descripcion)
+                db.add_articulo(nombre=self.nombre,codigo=self.__codigo,cantidad=self.cantidad,proveedor=self.proveedor,descripcion=self.descripcion)
                 print('Articulo creado exitosamente')
     
     @classmethod
@@ -99,7 +101,7 @@ class Articulo: #por ahora sin herenchia
         db.Db.delete_articulo(self.mostrar_codigo())
         del self
 
-    def pedir_paquete(self,usuario):
+    def pedir_paquete(self):
         from paquetes import Paquete
         if self.cantidad>=1:
             self.cantidad-=1
