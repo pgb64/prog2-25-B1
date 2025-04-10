@@ -35,6 +35,10 @@ class Articulo: #por ahora sin herenchia
     __init__():
     
         construye un producto
+
+    __str__():
+
+        representa un artticulo de manera comprensible
     
     editar_datos():
     
@@ -43,10 +47,6 @@ class Articulo: #por ahora sin herenchia
     eliminar_producto():
     
         se elimina el producto indicado. Solo podrá hacerlo el usuario que haya creado el articulo
-
-    pedir_paquete():
-
-        transofma un articulo en paquete. Recibe como parámetro el nombre de usuario del destinatario.
 
     dop():
 
@@ -80,7 +80,7 @@ class Articulo: #por ahora sin herenchia
                 
                 self.__codigo=codigo # es necesario que sea único
                 
-            elif codigo in db.get_codigos_articulos():
+            elif codigo in db.get_codigos_articulos(): # si no lo es da error
                 raise KeyError
         except:
             print('ERROR: Código duplicado')
