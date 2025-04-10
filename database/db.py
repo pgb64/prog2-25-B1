@@ -286,6 +286,11 @@ class Db:
             return None
 
     def get_codigos_articulos(self):
+        """Obtiene los códigos de todos los artículos
+        
+        Returns:
+            list: Códigos de artículos o [] si hay error
+        """
         try:
             articulos = self.get_articulos()
             codigos = []
@@ -293,7 +298,7 @@ class Db:
             for articulo in articulos:
                 if 'codigo' in articulo:
                     codigos.append(articulo['codigo'])
-            
+                
             return codigos
         except:
             return []
@@ -324,6 +329,11 @@ class Db:
 
     # ---- Métodos de gestión de paquetes ----
     def add_paquete(self, codigo_paquete, direccion, usuario, contenido):
+        """Añade un nuevo paquete al sistema
+        
+        Returns:
+            int: 201 si se creó, 409 si ya existe, 400 si hay error
+        """
         try:
             if self.get_paquete_by_codigo(codigo_paquete):
                 return 409
@@ -336,14 +346,24 @@ class Db:
             return 400
             
     def get_paquetes(self):
+        """Obtiene todos los paquetes registrados
+        
+        Returns:
+            list: Paquetes o [] si hay error
+        """
         try:
             with open(self.paquetes_csv, 'r') as f:
                 return list(csv.DictReader(f))
         except Exception as e:
             print(f"Error al obtener paquetes: {e}")
             return []
-    
+        
     def get_paquete_by_codigo(self, codigo_paquete):
+        """Busca un paquete por su código
+        
+        Returns:
+            dict: Datos del paquete o None si no existe
+        """
         try:
             for paquete in self.get_paquetes():
                 if paquete['codigo_paquete'] == codigo_paquete:
@@ -352,8 +372,13 @@ class Db:
         except Exception as e:
             print(f"Error al buscar paquete: {e}")
             return None
-
+    
     def get_codigos_paquetes(self):
+        """Obtiene los códigos de todos los paquetes
+        
+        Returns:
+            list: Códigos de paquetes o [] si hay error
+        """
         try:
             paquetes = self.get_paquetes()
             codigos = []
@@ -367,8 +392,13 @@ class Db:
             
         except Exception:
             return []
-
+    
     def delete_paquete(self, codigo_paquete):
+        """Elimina un paquete del sistema
+        
+        Returns:
+            int: 200 si se eliminó, 404 si no existe, 400 si hay error
+        """
         try:
             paquetes = self.get_paquetes()
             updated = False
