@@ -140,7 +140,7 @@ class MenuLogin():
             print('3. Salir')
             print('-'*20)
             option = input('Elige una opción: ')
-
+            
             if option == '1':
                 if self.login():
                     self.effect()  
