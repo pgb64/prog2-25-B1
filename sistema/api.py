@@ -29,6 +29,7 @@ class ApiResponse:
 
             user = data.get('user')
             password = data.get('password')
+            user_type = data.get('type', 'user')  # Si no se proporciona, usar 'user' por defecto
 
             # Validar entrada del usuario
             if not user or not password:
@@ -42,8 +43,14 @@ class ApiResponse:
                 print("Error: Contraseña no cumple con los requisitos de seguridad")  # Depuración
                 return jsonify({'message': 'La contraseña no cumple con los requisitos de seguridad'}), 400
 
+            # Validar tipo de usuario
+            valid_types = ['user', 'worker', 'admin']
+            if user_type not in valid_types:
+                print(f"Error: Tipo de usuario inválido: {user_type}")  # Depuración
+                user_type = 'user'  # Valor por defecto
+
             # Intentar registrar al usuario en la base de datos
-            result = self.db.add_user(user, password, tipo='user')
+            result = self.db.add_user(user, password, tipo=user_type)
             print(f"Resultado de add_user: {result}")  # Depuración
             if result == 201:
                 print("Usuario creado exitosamente")  # Depuración

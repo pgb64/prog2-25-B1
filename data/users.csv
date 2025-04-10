@@ -13,3 +13,4 @@ id,user,password,type
 12,prueba,$2b$12$mbBrVSyfxBqVHv1QHlAih.JpdzixibPNSoUwZT3ziLBr5S9Jy3TVa,usuario
 13,a,$2b$12$AjD7h9Wn3WhtLcHNQq6DweHhRLZhm4iZ5Zeqmh1il9iWkboAR9HGO,usuario
 14,Prueba,$2b$12$wEZwC7xcf9xBOBjdyQB.yeXm5QS2fnoRUPpvqQ9wAjG2P9.8HvKSu,user
+15,A,$2b$12$50ISSiSR5WVZ5kFNOhdXe.t39btpjIjpHqJUYajDdBeqmRDJsTR1C,user

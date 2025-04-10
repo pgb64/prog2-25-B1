@@ -11,7 +11,15 @@ utilizando parámetros globales configurables.
 import random
 import time
 
-NUM_REPARTIDORES: int = 3       # Número total de repartidores disponibles en la simulación.
+"""
+Esta es una clara simulación de un sistema de reparto ideal y totalmente funcional
+donde los repartidores están disponibles para entregar paquetes a medida que llegan.
+Esto se cambiaría cuando toda la lógica de reparto esté funcional y ya no serían valores
+estáticos sino vendrían siguendo la lógica de la app
+"""
+
+
+NUM_REPARTIDORES: int = 3 # Número total de repartidores disponibles en la simulación.
 TIEMPO_SIMULACION_MINUTOS: int = 60 # Duración total de la simulación en minutos.
 PROBABILIDAD_NUEVO_PAQUETE: float = 0.3 # Probabilidad (entre 0.0 y 1.0) de que un nuevo paquete llegue en cada minuto.
 TIEMPO_ENTREGA_MIN: int = 5      # Tiempo mínimo (en minutos) que tarda un repartidor en completar una entrega.

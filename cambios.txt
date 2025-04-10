@@ -1,5 +1,0 @@
-- Cambiar las respuestas de la api
-- Implementar tokens de login
-- Crear entorno virtual
-- Añadir en el README.md toda la ejecución
-- 
