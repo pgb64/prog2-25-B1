@@ -1,5 +1,5 @@
 from database.db import Db
-import articulos_paquetes.articulos as ar
+
 db=Db()
 
 '''
