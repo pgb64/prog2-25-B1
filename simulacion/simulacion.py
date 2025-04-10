@@ -1,79 +1,100 @@
+"""
+Script de simulación de reparto de paquetes
+
+Este módulo proporciona una función para ejecutar una simulación básica
+basada en eventos discretos (paso de minutos). No utiliza clases complejas
+ni depende de la base de datos o de otros módulos del proyecto. Su objetivo
+principal es ilustrar el concepto de simulación de forma clara y sencilla,
+utilizando parámetros globales configurables.
+"""
+
 import random
 import time
 
-NUM_REPARTIDORES = 3       # ¿Cuántos repartidores tenemos?
-TIEMPO_SIMULACION_MINUTOS = 60 # ¿Cuántos minutos simulamos? 
-PROBABILIDAD_NUEVO_PAQUETE = 0.3 # Probabilidad (0 a 1) de que llegue un paquete CADA MINUTO
-TIEMPO_ENTREGA_MIN = 5      # Tiempo MÍNIMO que tarda una entrega (minutos)
-TIEMPO_ENTREGA_MAX = 15     # Tiempo MÁXIMO que tarda una entrega (minutos)
+NUM_REPARTIDORES: int = 3       # Número total de repartidores disponibles en la simulación.
+TIEMPO_SIMULACION_MINUTOS: int = 60 # Duración total de la simulación en minutos.
+PROBABILIDAD_NUEVO_PAQUETE: float = 0.3 # Probabilidad (entre 0.0 y 1.0) de que un nuevo paquete llegue en cada minuto.
+TIEMPO_ENTREGA_MIN: int = 5      # Tiempo mínimo (en minutos) que tarda un repartidor en completar una entrega.
+TIEMPO_ENTREGA_MAX: int = 15     # Tiempo máximo (en minutos) que tarda un repartidor en completar una entrega.
 
 def ejecutar_simulacion_simple():
     """
-    Ejecuta una simulación muy básica de llegada y entrega de paquetes.
-    Se enfoca en la claridad del proceso.
+    Ejecuta el bucle principal de la simulación simple de reparto.
+
+    Avanza la simulación minuto a minuto durante el tiempo total especificado
+    en `TIEMPO_SIMULACION_MINUTOS`. En cada minuto, gestiona:
+    1. La finalización de entregas que estaban en curso.
+    2. La posible llegada aleatoria de nuevos paquetes (basado en `PROBABILIDAD_NUEVO_PAQUETE`).
+    3. La asignación de paquetes que están pendientes a repartidores que están libres (`NUM_REPARTIDORES`).
+    Los tiempos de entrega individuales se calculan aleatoriamente dentro del rango
+    definido por `TIEMPO_ENTREGA_MIN` y `TIEMPO_ENTREGA_MAX`.
+
+    Utiliza las constantes globales definidas al inicio de este módulo para su configuración.
+    Imprime el estado de la simulación en cada paso (minuto) y un resumen final
+    de resultados en la consola estándar. Esta función no retorna ningún valor.
     """
     print("--- Iniciando Simulación ---")
     print(f"Configuración: {NUM_REPARTIDORES} repartidores, {TIEMPO_SIMULACION_MINUTOS} minutos de simulación.")
 
-    repartidores_libres = NUM_REPARTIDORES
-    paquetes_pendientes = 0           # Contador de paquetes esperando repartidor
-    entregas_en_curso = []            # Lista para rastrear cuánto le falta a cada entrega activa
-                                      # Guardaremos los minutos restantes para cada entrega
-    paquetes_creados_total = 0
-    paquetes_entregados_total = 0
+    repartidores_libres: int = NUM_REPARTIDORES # Contador de repartidores actualmente sin asignación.
+    paquetes_pendientes: int = 0           # Contador de paquetes que han llegado pero esperan asignación.
+    entregas_en_curso: list[int] = []      # Lista que almacena los minutos restantes para cada entrega activa.
+ 
+    paquetes_creados_total: int = 0
+    paquetes_entregados_total: int = 0
 
-    # Bucle principal: Avanza minuto a minuto
     for minuto_actual in range(TIEMPO_SIMULACION_MINUTOS):
         print(f"\n----- Minuto {minuto_actual + 1} -----")
 
-        # 1. Actualizar entregas en curso (pasa 1 minuto)
-        entregas_terminadas_este_minuto = 0
-        # Usamos una copia de la lista para poder modificarla mientras iteramos
-        for i in range(len(entregas_en_curso) - 1, -1, -1): # Iterar hacia atrás para poder eliminar
-            entregas_en_curso[i] -= 1 # Reducir un minuto al tiempo restante
+        # Actualizar estado de las entregas en curso
+        # Se reduce en 1 el tiempo restante de cada entrega activa.
+        entregas_terminadas_este_minuto: int = 0
+        # Iteramos hacia atrás para poder eliminar elementos de la lista sin afectar índices posteriores.
+        for i in range(len(entregas_en_curso) - 1, -1, -1):
+            entregas_en_curso[i] -= 1 # Un minuto ha pasado para esta entrega.
             if entregas_en_curso[i] <= 0:
-                # ¡Entrega completada!
+                # Esta entrega ha terminado.
                 entregas_terminadas_este_minuto += 1
                 paquetes_entregados_total += 1
-                del entregas_en_curso[i] # Quitarla de la lista de en curso
+                del entregas_en_curso[i] # Eliminar la entrega completada de la lista.
 
-        # Si terminaron entregas, los repartidores se liberan
+        # Si alguna entrega terminó, los repartidores correspondientes quedan libres.
         if entregas_terminadas_este_minuto > 0:
             repartidores_libres += entregas_terminadas_este_minuto
             print(f"  Entregas completadas este minuto: {entregas_terminadas_este_minuto}. Repartidores libres ahora: {repartidores_libres}")
 
-        # ¿Llega un nuevo paquete?
+        # Simular la posible llegada de un nuevo paquete.
+        # Se genera un número aleatorio; si es menor que la probabilidad, llega un paquete.
         if random.random() < PROBABILIDAD_NUEVO_PAQUETE:
             paquetes_pendientes += 1
             paquetes_creados_total += 1
-            print(f"  ¡Nuevo paquete ha llegado! Pendientes: {paquetes_pendientes}")
+            print(f"  ¡Nuevo paquete ha llegado, Pendientes: {paquetes_pendientes}")
 
-        # Asignar paquetes pendientes a repartidores libres
-        paquetes_asignados_este_minuto = 0
+        # Intentar asignar paquetes pendientes a repartidores libres.
+        paquetes_asignados_este_minuto: int = 0
+        # Se asignan paquetes mientras haya pendientes Y haya repartidores libres.
         while paquetes_pendientes > 0 and repartidores_libres > 0:
-            # Hay paquete esperando y repartidor libre: ¡asignar!
-            paquetes_pendientes -= 1
-            repartidores_libres -= 1
+            # Realizar una asignación:
+            paquetes_pendientes -= 1           # Un paquete menos en espera.
+            repartidores_libres -= 1            # Un repartidor menos libre.
             paquetes_asignados_este_minuto += 1
 
-            # Decidir cuánto tardará esta entrega (aleatorio entre MIN y MAX)
-            tiempo_esta_entrega = random.randint(TIEMPO_ENTREGA_MIN, TIEMPO_ENTREGA_MAX)
+            # Calcular aleatoriamente cuánto tiempo tardará esta nueva entrega.
+            tiempo_esta_entrega: int = random.randint(TIEMPO_ENTREGA_MIN, TIEMPO_ENTREGA_MAX)
+            # Añadir el tiempo restante de esta nueva entrega a la lista de seguimiento.
             entregas_en_curso.append(tiempo_esta_entrega)
 
+        # Informar si se realizaron asignaciones en este minuto.
         if paquetes_asignados_este_minuto > 0:
              print(f"  Asignados {paquetes_asignados_este_minuto} paquetes a repartidores. Quedan libres: {repartidores_libres}. En curso: {len(entregas_en_curso)}")
 
-        # Pequeña pausa para poder leer la salida (opcional)
-        # time.sleep(0.1)
 
-    # Fin de la simulación
     print("\n--- Simulación Finalizada ---")
     print(f"Total de paquetes creados: {paquetes_creados_total}")
     print(f"Total de paquetes entregados: {paquetes_entregados_total}")
-    print(f"Paquetes que quedaron pendientes: {paquetes_pendientes}")
-    print(f"Paquetes aún en entrega al finalizar: {len(entregas_en_curso)}")
-    print(f"Repartidores que quedaron libres: {repartidores_libres}")
+    print(f"Paquetes que quedaron pendientes (sin asignar): {paquetes_pendientes}")
+    print(f"Paquetes aún en entrega al finalizar la simulación: {len(entregas_en_curso)}")
+    print(f"Repartidores que quedaron libres al finalizar: {repartidores_libres}")
 
-# --- Ejecutar la simulación al correr el script ---
 if __name__ == "__main__":
     ejecutar_simulacion_simple()
