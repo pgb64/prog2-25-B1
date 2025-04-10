@@ -575,3 +575,16 @@ class Db:
             return 200 if updated else 404
         except:
             return 400
+
+
+class Security:
+    
+    @staticmethod
+    def hash_password(password):
+        KEY = Security.get_key().encode('utf-8')
+        hash = bcrypt.hashpw(password.encode('utf-8'), bcrypt.hashpw(KEY, bcrypt.gensalt()))
+        return hash.decode('utf-8')
+    
+    @staticmethod
+    def verify_password(password, hash):
+        return bcrypt.checkpw(password.encode(), hash.encode())
