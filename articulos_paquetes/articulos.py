@@ -44,10 +44,6 @@ class Articulo: #por ahora sin herenchia
     
         se elimina el producto indicado. Solo podrá hacerlo el usuario que haya creado el articulo
 
-    pedir_paquete():
-
-        transofma un articulo en paquete. Recibe como parámetro el nombre de usuario del destinatario.
-
     dop():
 
         añade un código al diccionario dicc_proced según su procedencia
