@@ -33,7 +33,7 @@ class Db:
             self.users_csv: ['id', 'user', 'password', 'type'],
             self.personal_csv: ['id', 'fecha', 'dir', 'cp', 'ciudad', 'genero'],
             self.articulos_csv: ['nombre', 'codigo', 'cantidad', 'proveedor', 'descripcion'],
-            self.paquetes_csv: ['nombre', 'codigo_envio', 'procedencia', 'usuario_receptor', 'enviado'],
+            self.paquetes_csv: ['codigo_paquete', 'direccion', 'usuario', 'contenido'],
             self.repartidores_csv: ['nombre', 'id', 'telefono', 'provincia', 'ubicacion_tiempo_real', 
                                 'vehiculo', 'estado', 'envios_asignados'],
             self.furgonetas_csv: ['matricula', 'capacidad_maxima', 'provincia', 'envios_asignados', 'conductor']
@@ -324,74 +324,58 @@ class Db:
 
     # ---- Métodos de gestión de paquetes ----
     def add_paquete(self, nombre, codigo_envio, procedencia, usuario_receptor, enviado):
-        """Añade un nuevo paquete
-        
-        Returns:
-            int: 201 si se creó, 400 si hay error
-        """
         try:
-            if self.get_paquete_by_codigo(codigo_envio):
+            if self.get_paquete_by_codigo(codigo_paquete):
                 return 409
                 
-            enviado_s = 'True' if enviado else 'False'
-            with open(self.paquetes_csv, 'a') as f:
-                csv.writer(f).writerow([nombre, codigo_envio, procedencia, usuario_receptor, enviado_s]) 
+            with open(self.paquetes_csv, 'a', newline='') as f:
+                csv.writer(f).writerow([codigo_paquete, direccion, usuario, contenido])
             return 201
-        except:
+        except Exception as e:
+            print(f"Error al añadir paquete: {e}")
             return 400
             
     def get_paquetes(self):
-        """Obtiene todos los paquetes
-        
-        Returns:
-            list: Paquetes o [] si hay error
-        """
         try:
             with open(self.paquetes_csv, 'r') as f:
-                paquetes = list(csv.DictReader(f))
-            for paquete in paquetes:
-                paquete['enviado'] = paquete['enviado'] == 'True'
-            return paquetes
-        except:
+                return list(csv.DictReader(f))
+        except Exception as e:
+            print(f"Error al obtener paquetes: {e}")
             return []
     
     def get_paquete_by_codigo(self, codigo_envio):
-        """Obtiene paquete por código
-        
-        Returns:
-            dict: Datos del paquete o None si no existe
-        """
         try:
             for paquete in self.get_paquetes():
-                if paquete['codigo_envio'] == codigo_envio:
+                if paquete['codigo_paquete'] == codigo_paquete:
                     return paquete
             return None
-        except:
+        except Exception as e:
+            print(f"Error al buscar paquete: {e}")
             return None
     
     def update_estado_envio(self, codigo_envio, enviado):
-        """Actualiza estado de envío
-        
-        Returns:
-            int: 200 si se actualizó, 404 si no existe, 400 si hay error
-        """
         try:
             paquetes = self.get_paquetes()
             updated = False
             
             with open(self.paquetes_csv, 'w', newline='') as f:
-                fieldnames = ['nombre', 'codigo_envio', 'procedencia', 'usuario_receptor', 'enviado']
-                writer = csv.DictWriter(f, fieldnames=fieldnames)
+                writer = csv.DictWriter(f, fieldnames=['codigo_paquete', 'direccion', 'usuario', 'contenido'])
                 writer.writeheader()
-
+    
                 for paquete in paquetes:
-                    if paquete['codigo_envio'] == str(codigo_envio):
-                        paquete['enviado'] = 'True' if enviado else 'False'
+                    if paquete['codigo_paquete'] == codigo_paquete:
+                        if direccion is not None:
+                            paquete['direccion'] = direccion
+                        if usuario is not None:
+                            paquete['usuario'] = usuario
+                        if contenido is not None:
+                            paquete['contenido'] = contenido
                         updated = True
                     writer.writerow(paquete)
                     
             return 200 if updated else 404
-        except:
+        except Exception as e:
+            print(f"Error al actualizar paquete: {e}")
             return 400
 
     def get_codigos_paquetes(self, enviado=None):
@@ -409,29 +393,23 @@ class Db:
             return []
 
     def delete_paquete(self, codigo_envio):
-        """Elimina un paquete del sistema
-        
-        Returns:
-            int: 200 si se eliminó, 404 si no existe, 400 si hay error
-        """
         try:
             paquetes = self.get_paquetes()
             updated = False
             
             with open(self.paquetes_csv, 'w', newline='') as f:
-                writer = csv.DictWriter(f, fieldnames=['nombre', 'codigo_envio', 'procedencia', 'usuario_receptor', 'enviado'])
+                writer = csv.DictWriter(f, fieldnames=['codigo_paquete', 'direccion', 'usuario', 'contenido'])
                 writer.writeheader()
                 
                 for paquete in paquetes:
-                    if paquete['codigo_envio'] != codigo_envio:
-                        # Convertimos el booleano a string para guardarlo
-                        paquete['enviado'] = 'True' if paquete['enviado'] else 'False'
+                    if paquete['codigo_paquete'] != codigo_paquete:
                         writer.writerow(paquete)
                     else:
                         updated = True
             
             return 200 if updated else 404
-        except:
+        except Exception as e:
+            print(f"Error al eliminar paquete: {e}")
             return 400
 
     # --- Métodos para gestión de repartidores ---
