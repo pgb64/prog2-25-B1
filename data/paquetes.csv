@@ -1,2 +1,1 @@
-nombre,codigo_envio,procedencia,usuario_receptor,enviado
-Prueba,2024,china,Pabpe,False
+codigo_paquete,direccion,usuario,contenido
