@@ -44,9 +44,6 @@ class Db:
                 with open(archivo, 'w', newline='') as f:
                     csv.writer(f).writerow(campos)
                     
-
-
-
     # ---- Métodos de gestión de usuarios ----
                     
     def add_user(self, user: str, password: str, tipo: str) -> int:
@@ -176,7 +173,6 @@ class Db:
 
     def login(self, user: str, password: str):
         """Verifica las credenciales de un usuario y la validez de la contraseña."""
-        
         # Obtener los datos del usuario
         user_data = self.get_user(username=user)
         if user_data is None:
@@ -194,7 +190,6 @@ class Db:
 
         return 200  # Login exitoso
 
-
     def is_admin(self, user):
         """Comprueba si un usuario es admin
         
@@ -204,7 +199,6 @@ class Db:
         user_data = self.login(user['user'], user['pass'])
         return user_data and user_data['type'] == 'admin'
     
-
     def delete_user(self, user_id):
         """Elimina un user"""
         try:
@@ -227,7 +221,6 @@ class Db:
             return 404
         except:
             return 400
-
 
     def delete_user_data(self, user_id):
         """Elimina datos personales"""
@@ -305,7 +298,6 @@ class Db:
         except:
             return []
 
-
     def delete_articulo(self, codigo):
         """Elimina un artículo del inventario
         
@@ -329,12 +321,6 @@ class Db:
             return 200 if updated else 404
         except:
             return 400
-    
-
-
-
-
-
 
     # ---- Métodos de gestión de paquetes ----
     def add_paquete(self, nombre, codigo_envio, procedencia, usuario_receptor, enviado):
@@ -408,7 +394,6 @@ class Db:
         except:
             return 400
 
-
     def get_codigos_paquetes(self, enviado=None):
         try:
             paquetes = self.get_paquetes()
@@ -422,7 +407,6 @@ class Db:
             return codigos
         except:
             return []
-
 
     def delete_paquete(self, codigo_envio):
         """Elimina un paquete del sistema
@@ -505,7 +489,6 @@ class Db:
         except:
             return 400
         
-        
     def delete_repartidor(self, repartidor_id):
         """Elimina un repartidor del sistema
         
@@ -559,7 +542,7 @@ class Db:
                 return list(csv.DictReader(f))
         except:
             return []
-        
+            
     def asignar_conductor_furgoneta(self, matricula, conductor_id):
         """Asigna conductor a furgoneta
         
@@ -582,7 +565,6 @@ class Db:
             return 200 if updated else 404
         except:
             return 400
-
 
     def delete_furgoneta(self, matricula):
         """Elimina una furgoneta del sistema
@@ -607,16 +589,3 @@ class Db:
             return 200 if updated else 404
         except:
             return 400
-
-
-class Security:
-    
-    @staticmethod
-    def hash_password(password):
-        KEY = Security.get_key().encode('utf-8')
-        hash = bcrypt.hashpw(password.encode('utf-8'), bcrypt.hashpw(KEY, bcrypt.gensalt()))
-        return hash.decode('utf-8')
-    
-    @staticmethod
-    def verify_password(password, hash):
-        return bcrypt.checkpw(password.encode(), hash.encode())
