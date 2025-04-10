@@ -8,7 +8,7 @@ Trabajo de prog-2 sistema de gestión de reparto.
 * [Guillermo Espinosa Ruiz](https://github.com/ruukhaUA)
 * [Alejandro Parraga Sanchez](https://github.com/w4lexf)
 
-## Profesor
+## Profesorr
 [Miguel A. Teruel](https://github.com/materuel-ua)
 
 ## Requisitos
