@@ -74,7 +74,7 @@ class Articulo: #por ahora sin herenchia
             except:
                 print('Procedencia no válida')
             else:
-                db.add_articulo(self.nombre,self.__codigo,self.proveedor,self.descripcion)
+                db.DB.add_articulo(self.nombre,self.__codigo,self.proveedor,self.descripcion)
                 print('Articulo creado exitosamente')
         # csv!!!!!!
 
