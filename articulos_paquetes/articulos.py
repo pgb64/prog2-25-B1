@@ -2,7 +2,7 @@ from database.db import Db
 
 db=Db()
 
-class Articulo: #por ahora sin herenchia
+class Articulo:
     '''
     atrubutos
     -------------
@@ -84,24 +84,25 @@ class Articulo: #por ahora sin herenchia
                 raise KeyError
         except:
             print('ERROR: Código duplicado')
-        else:
+        else: # si todo sale bien inicializa el objeto
             self.nombre=nombre
             self.cantidad=cantidad
             self.proveedor=proveedor
             self.descripcion=descripcion
             try:
                 self.procedencia=procedencia
-                type(self).dop(procedencia,self.__codigo)
+                type(self).dop(procedencia,self.__codigo) # intenta introducir la procedencia
             except:
                 print('Procedencia no válida')
             else:
+                #introduce el objeto sin errores a la base de datos
                 db.add_articulo(nombre=self.nombre,codigo=self.__codigo,cantidad=self.cantidad,proveedor=self.proveedor,descripcion=self.descripcion)
                 print('Articulo creado exitosamente')
     
     @classmethod
     
     def dop(cls,procedencia,cod):
-        if not isinstance(procedencia,str):
+        if not isinstance(procedencia,str): # si la procedencia no es un string da error
             raise ValueError
         else:
             cls.dicc_proced[procedencia]=cod
@@ -126,6 +127,6 @@ def controlador_crear_articulo(nombre:str,cantidad:int,proveedor:str,codigo:str,
     
 def controlador_ver_articulo(articulo: str):
     try:
-        print(db.get_articulo_codigo(articulo))
+        print(db.get_articulo_codigo(articulo)) # obtiene la información desde la base de datos
     except:
         print('el id no pertenece al de ningun articulo')

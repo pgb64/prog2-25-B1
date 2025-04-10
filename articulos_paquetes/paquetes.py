@@ -56,37 +56,35 @@ class Paquete:
     def __init__(self,codigo_paquete:str,direccion:str,usuario:str,id_contenido:str):
         try:
             if codigo_paquete not in db.get_codigos_paquetes():
-                self.__codigo_paquete=codigo_paquete
+                self.__codigo_paquete=codigo_paquete # el coldigo debe ser unico
             else:
                 raise KeyError
         except:
             
             print('El código ya existe')
             
-        else:
+        else: # si todo sale bien inicializa el objeto
             
             self.direccion=direccion
             self.usuario=usuario
             self.enviado=False
             self.id_contenido=id_contenido
             print('Paquete creado exitosamente')
-            db.add_paquete( self.__codigo_paquete, self.direccion, self.usuario, self.id_contenido)
-    
+            db.add_paquete( self.__codigo_paquete, self.direccion, self.usuario, self.id_contenido) # lo añade a la bd
         
     def __str__(self):
         return f'Paquete ({self.mostrar_codigo()}) con direccion {self.direccion} para {self.usuario} '
 
-    def se_ha_enviado(self):
+    def se_ha_enviado(self): # el paquete ha llegado a su destino?
         self.enviado=True
-        db.Db.update_estado_envio(self.mostrar_codigo(),self.enviado)
         
     def mostrar_codigo(self):
         return self.__codigo_paquete
     
-def controlador_crear_paquete(codigo_paquete: str,direccion: str,usuario: str ,contenido: str):
+def controlador_crear_paquete(codigo_paquete: str,direccion: str,usuario: str ,contenido: str): # construye desde fuera
         return Paquete(codigo_paquete,direccion,usuario,contenido)
     
-def controlador_ver_paquete(id_paquete: str):
+def controlador_ver_paquete(id_paquete: str): # observa desde fuera
     try:
         print(db.get_paquete_by_codigo(id_paquete))
     except:
