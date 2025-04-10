@@ -3,17 +3,9 @@ import articulos_paquetes.articulos as ar
 '''
 atributos
 -------------------
-nombre: str
-
-    el mismo nombre que el artículo
-    
 codigo_paquete: str
 
     se generará aleatorio y se asegurará que no está ya en el csv
-    
-procedencia: str
-
-    la misma que el paquete
     
 usuario: str
 
@@ -22,7 +14,6 @@ usuario: str
 enviado: bool
 
     Booleano que define si un paquete ha sido enviado o no
-    
     
 métodos
 --------------------
