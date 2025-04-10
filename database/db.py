@@ -1,20 +1,24 @@
 import csv
 import os
+import bcrypt
 
 class Db:
-    """Gestor de base de datos CSV para usuarios y sus datos personales
+    """Gestor de base de datos CSV para users y sus datos personales
     
-    Esta clase ahora devuelve códigos HTTP en sus operaciones:
-    - 200: OK
-    - 201: Creado
-    - 400: Error en la solicitud
-    - 404: No encontrado
-    - 409: Conflicto (ya existe)
+    Esta clase ahora:
+    - Usa bcrypt para hashing de contraseñas
+    - Archivos renombrados: users.csv y personal.csv
+    - Devuelve códigos HTTP en sus operaciones:
+      - 200: OK
+      - 201: Creado
+      - 400: Error en la solicitud
+      - 404: No encontrado
+      - 409: Conflicto (ya existe)
     """
     
     def __init__(self):
-        self.usuarios_csv = 'data/usuarios.csv'
-        self.datos_csv = 'data/datos_personales.csv'
+        self.users_csv = 'data/users.csv'
+        self.personal_csv = 'data/personal.csv'
         self.articulos_csv = 'data/articulos.csv'
         self.paquetes_csv = 'data/paquetes.csv'
         self.repartidores_csv = 'data/repartidores.csv'
@@ -23,8 +27,8 @@ class Db:
         os.makedirs('data', exist_ok=True)
         
         archivos_config = {
-            self.usuarios_csv: ['id', 'user', 'pass', 'type'],
-            self.datos_csv: ['id', 'fecha', 'dir', 'cp', 'ciudad', 'genero'],
+            self.users_csv: ['id', 'user', 'password', 'type'],
+            self.personal_csv: ['id', 'fecha', 'dir', 'cp', 'ciudad', 'genero'],
             self.articulos_csv: ['nombre', 'codigo', 'cantidad', 'proveedor', 'descripcion'],
             self.paquetes_csv: ['nombre', 'codigo_envio', 'procedencia', 'usuario_receptor', 'enviado'],
             self.repartidores_csv: ['nombre', 'id', 'telefono', 'provincia', 'ubicacion_tiempo_real', 
@@ -39,35 +43,32 @@ class Db:
                     
     # ---- Métodos de gestión de usuarios ----
                     
-    def add_user(self, user, password, tipo):
-        """Registra un nuevo usuario en el sistema
-        
-        Returns:
-            int: 201 si se creó, 409 si ya existe, 400 si hay error
-        """
+    def add_user(self, user: str, password: str, tipo: str) -> int:
+        """Registra un nuevo user con contraseña hasheada"""
         try:
             if self.get_user(username=user):
-                return 409
+                return 409  # Conflicto: ya existe
                 
             users = self.get_users()
             new_id = len(users) + 1
-            with open(self.usuarios_csv, 'a', newline='') as f:
-                csv.writer(f).writerow([new_id, user, password, tipo])
-            return 201
-        except:
-            return 400
+            
+            # Hash de la contraseña con bcrypt
+            hashed_pw = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+            
+            with open(self.users_csv, 'a', newline='') as f:
+                csv.writer(f).writerow([new_id, user, hashed_pw.decode('utf-8'), tipo])
+            return 201  # Creado
+        except Exception as e:
+            print(f"Error al añadir user: {e}")
+            return 400  # Error
 
     def add_data(self, user_id, **data):
-        """Guarda datos personales de un usuario
-        
-        Returns:
-            int: 201 si se creó, 400 si hay error
-        """
+        """Guarda datos personales"""
         try:
             campos = ['id','fecha','dir','cp','ciudad','genero']
             data['id'] = str(user_id)
             
-            with open(self.datos_csv, 'a', newline='') as f:
+            with open(self.personal_csv, 'a', newline='') as f:
                 writer = csv.DictWriter(f, fieldnames=campos)
                 writer.writerow({k: data.get(k, '') for k in campos})
             return 201
@@ -75,25 +76,17 @@ class Db:
             return 400
 
     def get_users(self):
-        """Obtiene todos los usuarios registrados
-        
-        Returns:
-            list: Lista de usuarios o [] si hay error
-        """
+        """Obtiene todos los users"""
         try:
-            with open(self.usuarios_csv, 'r') as f:
+            with open(self.users_csv, 'r') as f:
                 return list(csv.DictReader(f))
         except:
             return []
 
     def get_data(self):
-        """Obtiene todos los datos personales
-        
-        Returns:
-            list: Lista de datos o [] si hay error
-        """
+        """Obtiene datos personales"""
         try:
-            with open(self.datos_csv, 'r') as f:
+            with open(self.personal_csv, 'r') as f:
                 return list(csv.DictReader(f))
         except:
             return []
@@ -165,14 +158,16 @@ class Db:
         except:
             return []
 
-    def login(self, user, password):
-        """Valida credenciales de acceso
-        
-        Returns:
-            dict: Datos del usuario si credenciales válidas, None si no
-        """
+    def login(self, user: str, password: str) -> Optional[dict]:
+        """Valida credenciales usando bcrypt"""
         user_data = self.get_user(username=user)
-        return user_data if (user_data and user_data['pass'] == password) else None
+        if not user_data:
+            return None
+            
+        # Verificar contraseña hasheada
+        if bcrypt.checkpw(password.encode('utf-8'), user_data['password'].encode('utf-8')):
+            return user_data
+        return None
 
     def is_admin(self, user):
         """Comprueba si un usuario es admin
@@ -185,17 +180,13 @@ class Db:
     
 
     def delete_user(self, user_id):
-        """Elimina un usuario del sistema
-        
-        Returns:
-            int: 200 si se eliminó, 404 si no existe, 400 si hay error
-        """
+        """Elimina un user"""
         try:
             users = self.get_users()
             updated = False
             
-            with open(self.usuarios_csv, 'w', newline='') as f:
-                writer = csv.DictWriter(f, fieldnames=['id', 'user', 'pass', 'type'])
+            with open(self.users_csv, 'w', newline='') as f:  # Cambiado a users.csv
+                writer = csv.DictWriter(f, fieldnames=['id', 'user', 'password', 'type'])
                 writer.writeheader()
                 
                 for user in users:
@@ -204,7 +195,6 @@ class Db:
                     else:
                         updated = True
             
-            # Si se eliminó el usuario, también eliminamos sus datos personales
             if updated:
                 self.delete_user_data(user_id)
                 return 200
@@ -214,16 +204,12 @@ class Db:
 
 
     def delete_user_data(self, user_id):
-        """Elimina los datos personales de un usuario
-        
-        Returns:
-            int: 200 si se eliminó, 404 si no existe, 400 si hay error
-        """
+        """Elimina datos personales"""
         try:
             data_list = self.get_data()
             updated = False
             
-            with open(self.datos_csv, 'w', newline='') as f:
+            with open(self.personal_csv, 'w', newline='') as f:
                 writer = csv.DictWriter(f, fieldnames=['id', 'fecha', 'dir', 'cp', 'ciudad', 'genero'])
                 writer.writeheader()
                 
