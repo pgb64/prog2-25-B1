@@ -49,30 +49,40 @@ class Db:
     def add_user(self, user: str, password: str, tipo: str) -> int:
         """Registra un nuevo usuario con contraseña hasheada y verifica la fortaleza de la contraseña."""
         try:
+            print(f"Intentando añadir usuario: {user}")  # Depuración
             # Verificar si la contraseña cumple con los requisitos de seguridad
             password_strength = Security.check_password_strength(password)
+            print(f"Resultado de check_password_strength: {password_strength}")  # Depuración
             if password_strength == 401:
+                print("Error: Contraseña inválida")  # Depuración
                 return 401  # Contraseña inválida
 
             # Verificar si el usuario ya existe
-            if self.get_user(username=user):
+            existing_user = self.get_user(username=user)
+            print(f"Usuario existente: {existing_user}")  # Depuración
+            if existing_user:
+                print("Error: Usuario ya existe")  # Depuración
                 return 409  # Conflicto: ya existe
 
             # Generar el nuevo ID del usuario
             users = self.get_users()
+            print(f"Usuarios actuales: {users}")  # Depuración
             new_id = len(users) + 1
+            print(f"Nuevo ID generado: {new_id}")  # Depuración
 
             # Hashear la contraseña utilizando la clase Security
             hashed_pw = Security.hash_password(password)
-            
+            print(f"Contraseña hasheada: {hashed_pw}")  # Depuración
+
             # Registrar el usuario en el archivo CSV
             with open(self.users_csv, 'a', newline='') as f:
                 csv.writer(f).writerow([new_id, user, hashed_pw, tipo])
+            print("Usuario registrado correctamente en el archivo CSV")  # Depuración
 
             return 201  # Usuario creado con éxito
 
         except Exception as e:
-            print(f"Error al añadir user: {e}")
+            print(f"Error al añadir user: {e}")  # Depuración
             return 400  # Error
 
     def add_data(self, user_id, **data):

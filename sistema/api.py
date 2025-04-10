@@ -1,6 +1,7 @@
 from flask import Flask, jsonify, request
+import requests
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
-from database import Db
+from database import Db, Security
 
 class ApiResponse:
     path = 'http://127.0.0.1:5000'
@@ -19,25 +20,39 @@ class ApiResponse:
 
         @self.app.route('/signup', methods=['POST'])
         def signup():
-            data = request.get_json()
+            '''
+            Lógica para registrar un nuevo usuario
+            '''
+            print("Recibida solicitud en /signup")  # Depuración inicial
+            data = request.get_json()  # Obtener datos del cuerpo de la solicitud
+            print(f"Datos recibidos: {data}")  # Verificar datos recibidos
+
             user = data.get('user')
             password = data.get('password')
-            tipo = data.get('tipo', 'usuario')  # Establecer 'usuario' como tipo por defecto
 
-            if not all([user, password]):
-                return jsonify({'message': 'Faltan datos'}), 400
+            # Validar entrada del usuario
+            if not user or not password:
+                print("Error: Usuario o contraseña vacíos")  # Depuración
+                return jsonify({'message': 'El usuario y la contraseña no pueden estar vacíos'}), 400
 
-            # Verificar si el usuario ya existe en la base de datos
-            result = self.db.add_user(user, password, tipo)
+            # Validar fortaleza de la contraseña
+            password_strength = Security.check_password_strength(password)
+            print(f"Resultado de validación de contraseña: {password_strength}")  # Depuración
+            if password_strength == 401:
+                print("Error: Contraseña no cumple con los requisitos de seguridad")  # Depuración
+                return jsonify({'message': 'La contraseña no cumple con los requisitos de seguridad'}), 400
 
-            # Usuario creado con éxito
+            # Intentar registrar al usuario en la base de datos
+            result = self.db.add_user(user, password, tipo='user')
+            print(f"Resultado de add_user: {result}")  # Depuración
             if result == 201:
-                return jsonify({'message': 'Usuario creado'}), 201
-            # Usuario ya existe
+                print("Usuario creado exitosamente")  # Depuración
+                return jsonify({'message': 'Usuario creado exitosamente'}), 201
             elif result == 409:
+                print("Error: El usuario ya existe")  # Depuración
                 return jsonify({'message': 'El usuario ya existe'}), 409
-            # Error al crear el usuario
             else:
+                print("Error: Fallo al crear el usuario")  # Depuración
                 return jsonify({'message': 'Error al crear el usuario'}), 400
 
         @self.app.route('/login', methods=['GET'])
@@ -52,8 +67,8 @@ class ApiResponse:
                     return jsonify({'message': f'Usuario "{user}" no encontrado'}), 400
 
                 # Verificar la fortaleza de la contraseña
-                result_password = self.db.check_password_strength(password)
-                if result_password == 401:
+                password_strength = Security.check_password_strength(password)
+                if password_strength == 401:
                     return jsonify({'message': 'Contraseña inválida'}), 401
 
                 # Si todo está correcto, generar el token
