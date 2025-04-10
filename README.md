@@ -4,21 +4,30 @@ Trabajo de prog-2 sistema de gestión de reparto.
 ## Autores
 
 * (Coordinador) [Nombre 1 Apellido 1 Apellido 1](https://github.com/alumno1)
-* [Nombre 2 Apellido 2 Apellido 2](https://github.com/alumno2)
+* [Andrés Segurado Climent](https://github.com/Bonew24)
 * [Jorge Izquierdo Baeza](https://github.com/jorgeizquierdo-git)
-* [Nombre 4 Apellido 4 Apellido 4](https://github.com/alumno4)
+* [Alejandro Párraga Sánchez](https://github.com/w4lexf)
 * [Nombre 5 Apellido 5 Apellido 5](https://github.com/alumno5)
 
 ## Profesor
-[//]: # (Dejad a quien corresponda)
-[Miguel A. Teruel](https://github.com/materuel-ua) / [Cristina Cachero](https://github.com/ccacheroc)
+[//]: # [Miguel A. Teruel](https://github.com/materuel-ua)
 
 ## Requisitos
 [//]: # (Indicad aquí los requisitos de vuestra aplicación, así como el alumno responsable de cada uno de ellos)
 * ... (Alumno x)
 
+
 ## Instrucciones de instalación y ejecución
-[//]: # (Indicad aquí qué habría que hacer para ejecutar vuestra aplicación)
+[//]: # (En primer lugar hay que activar el entorno virtual, para ello, ejecuta en la terminal el siguiente comando:)
+
+**source entorno_virtual/bin/activate**
+
+[//]: # (Ahora procedemos a instalar todas las dependencias:)
+
+**pip install -r requirements.txt**
+
+[//]: # (¡Ya tenemos nuestro entorno y librerías preparado! Puedes probar la aplicación.)
+
 
 ## Resumen de la API
 [//]: # (Cuando tengáis la API, añadiréis aquí la descripción de las diferentes llamadas.)
