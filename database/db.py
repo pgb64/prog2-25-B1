@@ -1,6 +1,8 @@
 import csv
 import os
 import bcrypt
+from dotenv import load_dotenv
+import pandas as pd
 
 class Db:
     """Gestor de base de datos CSV para users y sus datos personales
