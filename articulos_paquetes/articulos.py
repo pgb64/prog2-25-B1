@@ -1,5 +1,7 @@
 from database.db import Db
+
 db=Db()
+
 class Articulo: #por ahora sin herenchia
     '''
     atrubutos
@@ -50,7 +52,24 @@ class Articulo: #por ahora sin herenchia
 
         añade un código al diccionario dicc_proced según su procedencia
 
+    editar_datos():
     
+        edita los datos de un artículo a nivel de objetos
+        
+    eliminar_producto():
+    
+        elimina un articulo a nivel objeto
+        
+    funciones
+    ----------------------------
+    controlador_crear_articulo()
+    
+        crea un articulo dados todos sus atributos
+        
+    controlador_ver_articulo()
+    
+        dado el id de un articulo, devuelve sus datos
+        
     '''
 
     dicc_proced = {}
@@ -68,10 +87,10 @@ class Articulo: #por ahora sin herenchia
         else:
             self.nombre=nombre
             self.cantidad=cantidad
-            self.proveedor=proveedor # la base de datos, por favor
+            self.proveedor=proveedor
             self.descripcion=descripcion
             try:
-                self.procedencia=procedencia # cuando tengamos la base de datos, se podrá obtener la procedencia de un paquete de alguna otra forma
+                self.procedencia=procedencia
                 type(self).dop(procedencia,self.__codigo)
             except:
                 print('Procedencia no válida')
@@ -80,6 +99,7 @@ class Articulo: #por ahora sin herenchia
                 print('Articulo creado exitosamente')
     
     @classmethod
+    
     def dop(cls,procedencia,cod):
         if not isinstance(procedencia,str):
             raise ValueError
@@ -92,35 +112,20 @@ class Articulo: #por ahora sin herenchia
     def mostrar_codigo(self):
         return self.__codigo
     
-    def editar_datos(self,nombre,cantidad,proveedor):
+    def editar_datos(self,nombre:str,cantidad:str,proveedor:str):
         self.nombre=nombre
         self.cantidad=cantidad
         self.proveedor=proveedor
         
     def eliminar_producto(self): # esto solo podrá hacerlo quén haya subido el artículo
-        db.Db.delete_articulo(self.mostrar_codigo())
+        db.delete_articulo(self.mostrar_codigo())
         del self
 
-    def pedir_paquete(self):
-        from paquetes import Paquete
-        if self.cantidad>=1:
-            self.cantidad-=1
-            p=Paquete(self.nombre,self.mostrar_codigo(),self.procedencia,usuario)
-            print('artículo pedido exitosamente')
-            
-            return p
-
-        else:
-            print('No quedan artículos de este tipo')
-
-def controlador_crear_articulo(nombre,cantidad,proveedor,codigo,descripcion,procedencia):
+def controlador_crear_articulo(nombre:str,cantidad:int,proveedor:str,codigo:str,descripcion:str,procedencia:str):
         return Articulo(nombre,cantidad,proveedor,codigo,descripcion,procedencia)
     
-def controlador_ver_articulo(articulo):
+def controlador_ver_articulo(articulo: str):
     try:
-        if not isinstance(articulo,Articulo):
-            raise TypeError
-        else:
-            print(articulo)
+        print(db.get_articulo_codigo(articulo))
     except:
-        print('lo que se desea ver no es un articulo')
+        print('el id no pertenece al de ningun articulo')
