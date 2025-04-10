@@ -1,7 +1,5 @@
-from database.db import Db
-
-db=Db()
-
+import database.db as db
+import random
 class Articulo: #por ahora sin herenchia
     '''
     atrubutos
@@ -44,58 +42,43 @@ class Articulo: #por ahora sin herenchia
     
         se elimina el producto indicado. Solo podrá hacerlo el usuario que haya creado el articulo
 
+    pedir_paquete():
+
+        transofma un articulo en paquete. Recibe como parámetro el nombre de usuario del destinatario.
+
     dop():
 
         añade un código al diccionario dicc_proced según su procedencia
 
-    editar_datos():
     
-        edita los datos de un artículo a nivel de objetos
-        
-    eliminar_producto():
-    
-        elimina un articulo a nivel objeto
-        
-    funciones
-    ----------------------------
-    controlador_crear_articulo()
-    
-        crea un articulo dados todos sus atributos
-        
-    controlador_ver_articulo()
-    
-        dado el id de un articulo, devuelve sus datos
-        
     '''
 
     dicc_proced = {}
 
-    def __init__(self,nombre: str,cantidad: int,proveedor: str,codigo: str,descripcion: str,procedencia: str):
+    def __init__(self,nombre,cantidad,proveedor,codigo,descripcion,procedencia):
         try:
-            if codigo not in db.get_codigos_articulos():
-                
+            if codigo not in [1,2,3]: #db.Db.get_codigos_articulos() :
                 self.__codigo=codigo # es necesario que sea único
                 
-            elif codigo in db.get_codigos_articulos():
+            elif codigo in db.Db.get_codigos_articulos():
                 raise KeyError
         except:
             print('ERROR: Código duplicado')
         else:
             self.nombre=nombre
             self.cantidad=cantidad
-            self.proveedor=proveedor
+            self.proveedor=proveedor # la base de datos, por favor
             self.descripcion=descripcion
             try:
-                self.procedencia=procedencia
+                self.procedencia=procedencia # cuando tengamos la base de datos, se podrá obtener la procedencia de un paquete de alguna otra forma
                 type(self).dop(procedencia,self.__codigo)
             except:
                 print('Procedencia no válida')
             else:
-                db.add_articulo(nombre=self.nombre,codigo=self.__codigo,cantidad=self.cantidad,proveedor=self.proveedor,descripcion=self.descripcion)
+                #db.Db.add_articulo(self.nombre,self.__codigo,self.proveedor,self.descripcion)
                 print('Articulo creado exitosamente')
     
     @classmethod
-    
     def dop(cls,procedencia,cod):
         if not isinstance(procedencia,str):
             raise ValueError
@@ -108,20 +91,40 @@ class Articulo: #por ahora sin herenchia
     def mostrar_codigo(self):
         return self.__codigo
     
-    def editar_datos(self,nombre:str,cantidad:str,proveedor:str):
+    def editar_datos(self,nombre,cantidad,proveedor):
         self.nombre=nombre
         self.cantidad=cantidad
         self.proveedor=proveedor
         
     def eliminar_producto(self): # esto solo podrá hacerlo quén haya subido el artículo
-        db.delete_articulo(self.mostrar_codigo())
+        db.Db.delete_articulo(self.mostrar_codigo())
         del self
 
-def controlador_crear_articulo(nombre:str,cantidad:int,proveedor:str,codigo:str,descripcion:str,procedencia:str):
+    def pedir_paquete(self,usuario):
+        from paquetes import Paquete
+        if self.cantidad>=1:
+            self.cantidad-=1
+            p=Paquete(self.nombre,self.mostrar_codigo(),self.procedencia,usuario)
+            print('artículo pedido exitosamente')
+            
+            return p
+
+        else:
+            print('No quedan artículos de este tipo')
+
+def controlador_crear_articulo(nombre,cantidad,proveedor,descripcion,procedencia, codigo = None):
+        if not codigo:
+            while True:
+                codigo = random.randint(10000, 99999)
+                if codigo not in db.get_articulos():
+                    break
         return Articulo(nombre,cantidad,proveedor,codigo,descripcion,procedencia)
     
-def controlador_ver_articulo(articulo: str):
+def controlador_ver_articulo(articulo):
     try:
-        print(db.get_articulo_codigo(articulo))
+        if not isinstance(articulo,Articulo):
+            raise TypeError
+        else:
+            print(articulo)
     except:
-        print('el id no pertenece al de ningun articulo')
+        print('lo que se desea ver no es un articulo')
