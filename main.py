@@ -3,7 +3,7 @@ from sistema import ApiResponse
 import time
 
 class MenuLogin():
-    path = ApiResponse.path  # Ruta base de la API
+    path = ApiResponse.path
     def __init__(self):
         self.api = ApiResponse()
         self.user = None
@@ -18,8 +18,8 @@ class MenuLogin():
         for _ in range(3):
             for i in range(3):
                 time.sleep(0.1)
-                print('.', end='')  # Efecto de puntos de carga
-            print('\r', end='')  # Regresa a la misma línea para borrar los puntos
+                print('.', end='')  
+            print('\r', end='') 
 
     def login(self):
         '''
@@ -34,15 +34,16 @@ class MenuLogin():
 
             if response.status_code == 200:
                 data = response.json()
-                if data['status'] == 'success':
-                    self.token = data['access_token']  # Guarda el token
-                    print('Inicio de sesión exitoso.')
-                    return True
-                else:
-                    print('Error: ', data['message'])
-                    return False
+                self.token = data.get('access_token')
+                return True
+            elif response.status_code == 400:
+                print('Error: Usuario no encontrado.')
+                return False
+            elif response.status_code == 401:
+                print('Error: Contraseña inválida.')
+                return False
             else:
-                print('Error: ', response.status_code)
+                print(f'Error: {response.status_code}')
                 return False
                 
         except requests.exceptions.RequestException as e:
@@ -64,7 +65,6 @@ class MenuLogin():
         }
 
         try:
-            # Realizar la solicitud POST para crear el usuario
             response = requests.post(signup_url, json=data)
 
             if response.status_code == 201:
@@ -73,26 +73,28 @@ class MenuLogin():
             elif response.status_code == 409:
                 print('El usuario ya existe.')
                 return False
+            elif response.status_code == 400:
+                try:
+                    error_message = response.json().get("message", "Error desconocido")
+                except ValueError:
+                    error_message = "Respuesta inválida del servidor"
+                print(f"Error: {error_message}")
+                return False
             else:
-                print(f'Error al crear el usuario: {response.json()["message"]}')
+                print(f"Error inesperado: {response.status_code}")
                 return False
 
         except requests.exceptions.RequestException as e:
             print(f"Error al conectar con el servidor: {e}")
             return False
 
-    def logout(self):
-        '''
-        Lógica para cerrar sesión
-        '''
-        self.token = None
-        print('Sesión cerrada.')
 
     def menu_login(self):
         '''
         Menú principal de inicio de sesión y registro
         '''
         while True:
+            print('-'*20)
             print('Bienvenido a TuPaquete')
             print('-'*20)
             print('1. Iniciar sesión')
@@ -104,14 +106,11 @@ class MenuLogin():
             if option == '1':
                 if self.login():
                     self.effect()  # Efecto de carga
-                    print("Pasando al siguiente menú...")
-                    # Aquí podrías pasar al siguiente menú después del login exitoso
+                    ... # Aquí puedes agregar la lógica para el menú principal después de iniciar sesión
 
             elif option == '2':
                 if self.signup():
-                    self.effect()  # Efecto de carga
-                    print("Pasando al siguiente menú...")
-                    # Aquí podrías pasar al siguiente menú después de registrarse
+                    self.effect() 
 
             elif option == '3':
                 print('Saliendo...')
