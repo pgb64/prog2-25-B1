@@ -35,6 +35,10 @@ class Articulo: #por ahora sin herenchia
     __init__():
     
         construye un producto
+
+    __str__():
+
+        representa un artticulo de manera comprensible
     
     editar_datos():
     
@@ -76,7 +80,7 @@ class Articulo: #por ahora sin herenchia
                 
                 self.__codigo=codigo # es necesario que sea único
                 
-            elif codigo in db.get_codigos_articulos():
+            elif codigo in db.get_codigos_articulos(): # si no lo es da error
                 raise KeyError
         except:
             print('ERROR: Código duplicado')
