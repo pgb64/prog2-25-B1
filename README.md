@@ -22,9 +22,9 @@ Trabajo de prog-2 sistema de gestión de reparto.
 * Implementación de un sistema de simulación con variables ajustables (cantidad pedidos, nº repartidores...) usando métodos probabilísticos avanzados, esto permitirá experimentar en diferentes escenarios. (Ignacio Mendoza Díaz) 
 
 ## Instrucciones de instalación y ejecución
-[//]: # (En primer lugar hay que activar el entorno virtual, para ello, ejecuta en la terminal el siguiente comando:)
+[//]: # (En primer lugar hay que activar el entorno virtual, para ello, ejecuta en la terminal el siguiente comando: python -m venv venvpaquetes) 
+[//]: # (luego: source entorno_virtual/bin/activate.)
 [//]: # (IMPORTANTE: No ejecutar en thonny, usar Visual Studio)
-**source entorno_virtual/bin/activate**
 
 [//]: # (Ahora procedemos a instalar todas las dependencias:)
 
@@ -34,5 +34,6 @@ Haz pip install -r requirements.txt y tendras todo lo necesario para poder ejecu
 
 
 ## Resumen de la API
-[//]: # (Cuando tengáis la API, añadiréis aquí la descripción de las diferentes llamadas.)
+[//]: # (Para comenzar a usar la app en Visual Studio abre dos terminales a la vez, en el primero ejecuta: python run_server.py)
+[//]: # (Luego en la segunda terminal ejecuta: python main.py con esto ya se podrá ver la interfaz de la app)
 [//]: # (Para la evaluación por pares, indicaréis aquí las diferentes opciones de vuestro menú textual, especificando para qué sirve cada una de ellas)
