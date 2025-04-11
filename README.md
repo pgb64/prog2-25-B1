@@ -36,4 +36,4 @@ Haz pip install -r requirements.txt y tendras todo lo necesario para poder ejecu
 ## Resumen de la API
 [//]: # (Para comenzar a usar la app en Visual Studio abre dos terminales a la vez, en el primero ejecuta: python run_server.py)
 [//]: # (Luego en la segunda terminal ejecuta: python main.py con esto ya se podrá ver la interfaz de la app)
-[//]: # (Para la evaluación por pares, indicaréis aquí las diferentes opciones de vuestro menú textual, especificando para qué sirve cada una de ellas)
+[//]: # ( (usuario): randomuser_fzsoxh  Contraseña: sxJqGb4#uV )
