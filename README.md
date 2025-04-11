@@ -7,6 +7,8 @@ Trabajo de prog-2 sistema de gestión de reparto.
 * [Jorge Izquierdo Baeza](https://github.com/jorgeizquierdo-git)
 * [Guillermo Espinosa Ruiz](https://github.com/ruukhaUA)
 * [Alejandro Parraga Sanchez](https://github.com/w4lexf)
+* [Ignacio Mendoza Diaz](https://github.com/w4lexf)
+* [Ignacio Mendoza Diaz](https://github.com/imd24)
 
 ## Profesor
 [Miguel A. Teruel](https://github.com/materuel-ua)
@@ -21,7 +23,7 @@ Trabajo de prog-2 sistema de gestión de reparto.
 
 ## Instrucciones de instalación y ejecución
 [//]: # (En primer lugar hay que activar el entorno virtual, para ello, ejecuta en la terminal el siguiente comando:)
-
+[//]: # (IMPORTANTE: No ejecutar en thonny, usar Visual Studio)
 **source entorno_virtual/bin/activate**
 
 [//]: # (Ahora procedemos a instalar todas las dependencias:)
