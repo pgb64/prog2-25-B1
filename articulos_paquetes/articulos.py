@@ -18,9 +18,9 @@ class Articulo:
     
         cantidad total disponible del producto
         
-    codigo: str
+    codigo: int
     
-        los nombres pueden ser iguales, el gódigo no
+        los nombres pueden ser iguales, el código no, será un contador de instancias.
         
     proveedor: str
     
@@ -71,16 +71,16 @@ class Articulo:
         dado el id de un articulo, devuelve sus datos
         
     '''
-
+    codigo=1
     dicc_proced = {}
 
-    def __init__(self,nombre: str,cantidad: int,proveedor: str,codigo: str,descripcion: str,procedencia: str):
+    def __init__(self,nombre: str,cantidad: int,proveedor: str,descripcion: str,procedencia: str):
         try:
-            if codigo not in db.get_codigos_articulos():
+            if type(self).codigo not in db.get_codigos_articulos():
                 
-                self.__codigo=codigo # es necesario que sea único
+                self.__codigo=type(self).codigo # es necesario que sea único
                 
-            elif codigo in db.get_codigos_articulos(): # si no lo es da error
+            elif type(self).codigo in db.get_codigos_articulos(): # si no lo es da error
                 raise KeyError
         except:
             print('ERROR: Código duplicado')
@@ -98,6 +98,7 @@ class Articulo:
                 #introduce el objeto sin errores a la base de datos
                 db.add_articulo(nombre=self.nombre,codigo=self.__codigo,cantidad=self.cantidad,proveedor=self.proveedor,descripcion=self.descripcion)
                 print('Articulo creado exitosamente')
+                type(self).codigo+=1
     
     @classmethod
     

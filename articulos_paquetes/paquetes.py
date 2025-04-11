@@ -7,7 +7,7 @@ atributos
 -------------------
 codigo_paquete: str
 
-    se generará aleatorio y se asegurará que no está ya en el csv
+    será un contador de instancias y se asegurará que no está ya en el csv
     
 usuario: str
 
@@ -53,10 +53,12 @@ controlador_ver_paquete():
 
 class Paquete:
 
-    def __init__(self,codigo_paquete:str,direccion:str,usuario:str,id_contenido:str):
+    contador=1
+
+    def __init__(self,direccion:str,usuario:str,id_contenido:str):
         try:
-            if codigo_paquete not in db.get_codigos_paquetes():
-                self.__codigo_paquete=codigo_paquete # el coldigo debe ser unico
+            if type(self).contador not in db.get_codigos_paquetes():
+                self.__codigo_paquete=type(self).contador # el coldigo debe ser unico
             else:
                 raise KeyError
         except:
@@ -70,7 +72,8 @@ class Paquete:
             self.enviado=False
             self.id_contenido=id_contenido
             print('Paquete creado exitosamente')
-            db.add_paquete( self.__codigo_paquete, self.direccion, self.usuario, self.id_contenido) # lo añade a la bd
+            db.add_paquete(self.__codigo_paquete, self.direccion, self.usuario, self.id_contenido) # lo añade a la bd
+            type(self).contador+=1
         
     def __str__(self):
         return f'Paquete ({self.mostrar_codigo()}) con direccion {self.direccion} para {self.usuario} '

@@ -1,6 +1,10 @@
 import requests
 from sistema import ApiResponse
 import time
+from database.db import Db
+from articulos_paquetes.paquetes import *
+
+db=Db() #inicializo la base de datos
 
 class MenuLogin():
     path = ApiResponse.path
@@ -156,6 +160,7 @@ class MenuLogin():
                 break
 
 class MainMenu(MenuLogin):
+    
     def __init__(self):
         super().__init__()
     
@@ -167,19 +172,28 @@ class MainMenu(MenuLogin):
             print('-'*20)
             print('TuPaquete - Menú Principal')
             print('-'*20)
-            print('1. Ver pedidos')
+            print('1. Ver articulos')
             print('2. Crear pedido')
             print('3. Salir')
             print('-'*20)
             option = input('Elige una opción: ')
 
             if option == '1':
-                # Lógica para ver pedidos
-                pass
+                # Lógica para ver articulos
+                print(db.get_articulos())
 
             elif option == '2':
                 # Lógica para crear pedido
-                pass
+                dp=input('Introduce tu direccion postal: ')
+                el=input('Introduce el código del paquete que deseas: ')
+                try:
+                    if el in db.get_articulos():
+                        controlador_crear_paquete(usuario=MenuLogin.user,direcion=dp,id_contenido=el)
+                    else:
+                        raise ValueError
+                except:
+                    print('El índice seleccionado no existe')
+                
 
             elif option == '3':
                 print('Saliendo...')
