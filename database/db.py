@@ -5,20 +5,7 @@ import pandas as pd
 from database.security import Security
 
 
-class Db:
-    """Gestor de base de datos CSV para users y sus datos personales
-    
-    Esta clase ahora:
-    - Usa bcrypt para hashing de contraseñas
-    - Archivos renombrados: users.csv y personal.csv
-    - Devuelve códigos HTTP en sus operaciones:
-      - 200: OK
-      - 201: Creado
-      - 400: Error en la solicitud
-      - 404: No encontrado
-      - 409: Conflicto (ya existe)
-    """
-    
+class Db:   
     def __init__(self):
         self.users_csv = 'data/users.csv'
         self.personal_csv = 'data/personal.csv'
@@ -49,31 +36,41 @@ class Db:
     def add_user(self, user: str, password: str, tipo: str) -> int:
         """Registra un nuevo usuario con contraseña hasheada y verifica la fortaleza de la contraseña."""
         try:
+            print(f"Intentando añadir usuario: {user}")
             # Verificar si la contraseña cumple con los requisitos de seguridad
             password_strength = Security.check_password_strength(password)
+            print(f"Resultado de check_password_strength: {password_strength}")
             if password_strength == 401:
-                return 401  # Contraseña inválida
+                print("Error: Contraseña inválida")
+                return 401 
 
             # Verificar si el usuario ya existe
-            if self.get_user(username=user):
-                return 409  # Conflicto: ya existe
+            existing_user = self.get_user(username=user)
+            print(f"Usuario existente: {existing_user}")
+            if existing_user:
+                print("Error: Usuario ya existe")
+                return 409
 
             # Generar el nuevo ID del usuario
             users = self.get_users()
+            print(f"Usuarios actuales: {users}")
             new_id = len(users) + 1
+            print(f"Nuevo ID generado: {new_id}")
 
             # Hashear la contraseña utilizando la clase Security
             hashed_pw = Security.hash_password(password)
-            
+            print(f"Contraseña hasheada: {hashed_pw}")
+
             # Registrar el usuario en el archivo CSV
             with open(self.users_csv, 'a', newline='') as f:
                 csv.writer(f).writerow([new_id, user, hashed_pw, tipo])
+            print("Usuario registrado correctamente en el archivo CSV")
 
-            return 201  # Usuario creado con éxito
+            return 201
 
         except Exception as e:
             print(f"Error al añadir user: {e}")
-            return 400  # Error
+            return 400
 
     def add_data(self, user_id, **data):
         """Guarda datos personales"""
@@ -173,22 +170,21 @@ class Db:
 
     def login(self, user: str, password: str):
         """Verifica las credenciales de un usuario y la validez de la contraseña."""
-        # Obtener los datos del usuario
         user_data = self.get_user(username=user)
         if user_data is None:
-            return 400  # Usuario no encontrado
+            return 400
 
         # Verificar la fortaleza de la contraseña utilizando la clase Security
         password_strength = Security.check_password_strength(password)
         if password_strength == 401:
-            return 401  # Contraseña inválida (no cumple los requisitos)
+            return 401
 
         # Verificar que la contraseña coincida con la almacenada en la base de datos
         hashed_password = user_data['password']
         if not Security.verify_password(password, hashed_password):
-            return 401  # Contraseña incorrecta
+            return 401
 
-        return 200  # Login exitoso
+        return 200
 
     def is_admin(self, user):
         """Comprueba si un usuario es admin
@@ -286,6 +282,11 @@ class Db:
             return None
 
     def get_codigos_articulos(self):
+        """Obtiene los códigos de todos los artículos
+        
+        Returns:
+            list: Códigos de artículos o [] si hay error
+        """
         try:
             articulos = self.get_articulos()
             codigos = []
@@ -293,7 +294,7 @@ class Db:
             for articulo in articulos:
                 if 'codigo' in articulo:
                     codigos.append(articulo['codigo'])
-            
+                
             return codigos
         except:
             return []
@@ -324,6 +325,11 @@ class Db:
 
     # ---- Métodos de gestión de paquetes ----
     def add_paquete(self, codigo_paquete, direccion, usuario, contenido):
+        """Añade un nuevo paquete al sistema
+        
+        Returns:
+            int: 201 si se creó, 409 si ya existe, 400 si hay error
+        """
         try:
             if self.get_paquete_by_codigo(codigo_paquete):
                 return 409
@@ -336,14 +342,24 @@ class Db:
             return 400
             
     def get_paquetes(self):
+        """Obtiene todos los paquetes registrados
+        
+        Returns:
+            list: Paquetes o [] si hay error
+        """
         try:
             with open(self.paquetes_csv, 'r') as f:
                 return list(csv.DictReader(f))
         except Exception as e:
             print(f"Error al obtener paquetes: {e}")
             return []
-    
+        
     def get_paquete_by_codigo(self, codigo_paquete):
+        """Busca un paquete por su código
+        
+        Returns:
+            dict: Datos del paquete o None si no existe
+        """
         try:
             for paquete in self.get_paquetes():
                 if paquete['codigo_paquete'] == codigo_paquete:
@@ -352,8 +368,13 @@ class Db:
         except Exception as e:
             print(f"Error al buscar paquete: {e}")
             return None
-
+    
     def get_codigos_paquetes(self):
+        """Obtiene los códigos de todos los paquetes
+        
+        Returns:
+            list: Códigos de paquetes o [] si hay error
+        """
         try:
             paquetes = self.get_paquetes()
             codigos = []
@@ -367,8 +388,13 @@ class Db:
             
         except Exception:
             return []
-
+    
     def delete_paquete(self, codigo_paquete):
+        """Elimina un paquete del sistema
+        
+        Returns:
+            int: 200 si se eliminó, 404 si no existe, 400 si hay error
+        """
         try:
             paquetes = self.get_paquetes()
             updated = False
