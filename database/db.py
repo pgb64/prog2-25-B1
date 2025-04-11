@@ -8,9 +8,8 @@ from database.security import Security
 class Db:
     """Gestor de base de datos CSV para users y sus datos personales
     
-    Esta clase ahora:
-    - Usa bcrypt para hashing de contraseñas
-    - Archivos renombrados: users.csv y personal.csv
+    Esta clase tiene:
+    - Usa "bcrypt" para hashing de contraseñas
     - Devuelve códigos HTTP en sus operaciones:
       - 200: OK
       - 201: Creado
@@ -34,8 +33,7 @@ class Db:
             self.personal_csv: ['id', 'fecha', 'dir', 'cp', 'ciudad', 'genero'],
             self.articulos_csv: ['nombre', 'codigo', 'cantidad', 'proveedor', 'descripcion'],
             self.paquetes_csv: ['codigo_paquete', 'direccion', 'usuario', 'contenido'],
-            self.repartidores_csv: ['nombre', 'id', 'telefono', 'provincia', 'ubicacion_tiempo_real', 
-                                'vehiculo', 'estado', 'envios_asignados'],
+            self.repartidores_csv: ['nombre', 'id', 'telefono', 'provincia', 'ubicacion_tiempo_real', 'vehiculo', 'estado', 'envios_asignados'],
             self.furgonetas_csv: ['matricula', 'capacidad_maxima', 'provincia', 'envios_asignados', 'conductor']
         }
         
@@ -49,31 +47,25 @@ class Db:
     def add_user(self, user: str, password: str, tipo: str) -> int:
         """Registra un nuevo usuario con contraseña hasheada y verifica la fortaleza de la contraseña."""
         try:
-            # Verificar si la contraseña cumple con los requisitos de seguridad
             password_strength = Security.check_password_strength(password)
             if password_strength == 401:
-                return 401  # Contraseña inválida
+                return 401
 
-            # Verificar si el usuario ya existe
             if self.get_user(username=user):
-                return 409  # Conflicto: ya existe
+                return 409 
 
-            # Generar el nuevo ID del usuario
             users = self.get_users()
             new_id = len(users) + 1
 
-            # Hashear la contraseña utilizando la clase Security
             hashed_pw = Security.hash_password(password)
             
-            # Registrar el usuario en el archivo CSV
             with open(self.users_csv, 'a', newline='') as f:
                 csv.writer(f).writerow([new_id, user, hashed_pw, tipo])
-
-            return 201  # Usuario creado con éxito
+            return 201
 
         except Exception as e:
             print(f"Error al añadir user: {e}")
-            return 400  # Error
+            return 400
 
     def add_data(self, user_id, **data):
         """Guarda datos personales"""
@@ -173,22 +165,19 @@ class Db:
 
     def login(self, user: str, password: str):
         """Verifica las credenciales de un usuario y la validez de la contraseña."""
-        # Obtener los datos del usuario
         user_data = self.get_user(username=user)
         if user_data is None:
-            return 400  # Usuario no encontrado
+            return 400
 
-        # Verificar la fortaleza de la contraseña utilizando la clase Security
         password_strength = Security.check_password_strength(password)
         if password_strength == 401:
-            return 401  # Contraseña inválida (no cumple los requisitos)
+            return 401
 
-        # Verificar que la contraseña coincida con la almacenada en la base de datos
         hashed_password = user_data['password']
         if not Security.verify_password(password, hashed_password):
-            return 401  # Contraseña incorrecta
+            return 401
 
-        return 200  # Login exitoso
+        return 200 
 
     def is_admin(self, user):
         """Comprueba si un usuario es admin
