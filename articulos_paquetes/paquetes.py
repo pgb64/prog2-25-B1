@@ -60,9 +60,8 @@ class Paquete:
     def __str__(self):
         return f'Paquete ({self.mostrar_codigo()}) con direccion {self.direccion} para {self.usuario} '
 
-    def se_ha_enviado(self):
+    def se_ha_enviado(self): # el paquete ha llegado a su destino?
         self.enviado=True
-        db.Db.update_estado_envio(self.mostrar_codigo(),self.enviado)
         
     def mostrar_codigo(self):
         return self.__codigo_paquete

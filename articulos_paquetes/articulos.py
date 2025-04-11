@@ -64,7 +64,7 @@ class Articulo: #por ahora sin herenchia
                 raise KeyError
         except:
             print('ERROR: Código duplicado')
-        else:
+        else: # si todo sale bien inicializa el objeto
             self.nombre=nombre
             self.cantidad=cantidad
             self.proveedor=proveedor # la base de datos, por favor
@@ -80,7 +80,7 @@ class Articulo: #por ahora sin herenchia
     
     @classmethod
     def dop(cls,procedencia,cod):
-        if not isinstance(procedencia,str):
+        if not isinstance(procedencia,str): # si la procedencia no es un string da error
             raise ValueError
         else:
             cls.dicc_proced[procedencia]=cod
