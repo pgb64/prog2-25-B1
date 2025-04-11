@@ -5,7 +5,19 @@ import pandas as pd
 from database.security import Security
 
 
-class Db:   
+class Db:
+    """Gestor de base de datos CSV para users y sus datos personales
+    
+    Esta clase ademas tiene:
+    - bcrypt para hashing de contraseñas (Encriptado)
+    - Devuelve códigos HTTP en sus operaciones (funcionamiento con la API):
+      - 200: OK
+      - 201: Creado
+      - 400: Error en la solicitud
+      - 404: No encontrado
+      - 409: Conflicto
+    """
+    
     def __init__(self):
         self.users_csv = 'data/users.csv'
         self.personal_csv = 'data/personal.csv'
@@ -37,31 +49,26 @@ class Db:
         """Registra un nuevo usuario con contraseña hasheada y verifica la fortaleza de la contraseña."""
         try:
             print(f"Intentando añadir usuario: {user}")
-            # Verificar si la contraseña cumple con los requisitos de seguridad
             password_strength = Security.check_password_strength(password)
             print(f"Resultado de check_password_strength: {password_strength}")
             if password_strength == 401:
                 print("Error: Contraseña inválida")
                 return 401 
 
-            # Verificar si el usuario ya existe
             existing_user = self.get_user(username=user)
             print(f"Usuario existente: {existing_user}")
             if existing_user:
                 print("Error: Usuario ya existe")
                 return 409
 
-            # Generar el nuevo ID del usuario
             users = self.get_users()
             print(f"Usuarios actuales: {users}")
             new_id = len(users) + 1
             print(f"Nuevo ID generado: {new_id}")
 
-            # Hashear la contraseña utilizando la clase Security
             hashed_pw = Security.hash_password(password)
             print(f"Contraseña hasheada: {hashed_pw}")
 
-            # Registrar el usuario en el archivo CSV
             with open(self.users_csv, 'a', newline='') as f:
                 csv.writer(f).writerow([new_id, user, hashed_pw, tipo])
             print("Usuario registrado correctamente en el archivo CSV")
@@ -73,7 +80,15 @@ class Db:
             return 400
 
     def add_data(self, user_id, **data):
-        """Guarda datos personales"""
+        """Guarda datos personales de un usuario
+        
+        Args:
+            user_id: ID del usuario al que pertenecen los datos
+            **data: Datos personales a guardar (fecha, dir, cp, ciudad, genero)
+        
+        Returns:
+            int: 201 si se creó correctamente, 400 si hay error
+        """
         try:
             campos = ['id','fecha','dir','cp','ciudad','genero']
             data['id'] = str(user_id)
@@ -86,15 +101,23 @@ class Db:
             return 400
 
     def get_users(self):
-        """Obtiene todos los users"""
+        """Obtiene todos los usuarios registrados
+        
+        Returns:
+            list: Lista de diccionarios con datos de usuarios o [] si hay error
+        """
         try:
             with open(self.users_csv, 'r') as f:
                 return list(csv.DictReader(f))
         except:
             return []
-
+    
     def get_data(self):
-        """Obtiene datos personales"""
+        """Obtiene todos los datos personales almacenados
+        
+        Returns:
+            list: Lista de diccionarios con datos personales o [] si hay error
+        """
         try:
             with open(self.personal_csv, 'r') as f:
                 return list(csv.DictReader(f))
@@ -174,12 +197,10 @@ class Db:
         if user_data is None:
             return 400
 
-        # Verificar la fortaleza de la contraseña utilizando la clase Security
         password_strength = Security.check_password_strength(password)
         if password_strength == 401:
             return 401
 
-        # Verificar que la contraseña coincida con la almacenada en la base de datos
         hashed_password = user_data['password']
         if not Security.verify_password(password, hashed_password):
             return 401
@@ -201,7 +222,7 @@ class Db:
             users = self.get_users()
             updated = False
             
-            with open(self.users_csv, 'w', newline='') as f:  # Cambiado a users.csv
+            with open(self.users_csv, 'w', newline='') as f: 
                 writer = csv.DictWriter(f, fieldnames=['id', 'user', 'password', 'type'])
                 writer.writeheader()
                 
