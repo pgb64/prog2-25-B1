@@ -37,6 +37,11 @@ def menu_usuario():
                 thread = []
                 break
 
+            case _:
+                print('Introduce una opción válida')
+                thread.pop()
+                continue
+
         op = input('Selección: ')
         try:
             op = int(op)
@@ -165,6 +170,11 @@ def menu_vendedor():
             case [3]:
                 thread = []
                 break
+
+            case _:
+                print('Introduce una opción válida')
+                thread.pop()
+                continue
 
         op = input('Selección: ')
         try:
