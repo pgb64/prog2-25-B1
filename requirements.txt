@@ -1,6 +1,0 @@
-flask
-requests
-bcrypt
-dotenv
-pandas
-flask-jwt-extended
