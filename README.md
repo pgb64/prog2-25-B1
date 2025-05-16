@@ -2,20 +2,22 @@
 Trabajo de prog-2 sistema de gestión de reparto.
 
 ## Autores
-
-* (Coordinador) [Nombre 1 Apellido 1 Apellido 1](https://github.com/alumno1)
+* (Coordinador) [Pablo García Beltrá](https://github.com/pgb64)
 * [Andrés Segurado Climent](https://github.com/Bonew24)
 * [Jorge Izquierdo Baeza](https://github.com/jorgeizquierdo-git)
-* [Alejandro Párraga Sánchez](https://github.com/w4lexf)
-* [Nombre 5 Apellido 5 Apellido 5](https://github.com/alumno5)
+* [Guillermo Espinosa Ruiz](https://github.com/ruukhaUA)
+* [Alejandro Parraga Sanchez](https://github.com/w4lexf)
 
 ## Profesor
-[//]: # [Miguel A. Teruel](https://github.com/materuel-ua)
+[Miguel A. Teruel](https://github.com/materuel-ua)
 
 ## Requisitos
-[//]: # (Indicad aquí los requisitos de vuestra aplicación, así como el alumno responsable de cada uno de ellos)
-* ... (Alumno x)
-
+* Gestión de paquetes y artículos, incluyendo su creación, modificación y eliminación. Cada paquete deberá contener al menos un artículo y el sistema manejará los posibles errores derivados de su gestión. (Jorge Izquierdo Baeza)  
+* Gestión de repartidores y furgonetas por provincia, estableciendo un sitema de estados para controlar la disponibilidad y optimizar la distribución de envíos.  (Alejandro Párraga Sánchez) 
+* Generación y visualización de mapas interactivos con rutas optimizadas, calculando estimaciones de tiempo de entrega mediante integración con APIs como Google Maps y open Source Routing. (Pablo García Beltrá) 
+* Almacenamiento y gestión de datos en una BD (info de paquetes, usuarios, repartidores...), desde la terminal se podrán consultar y modificar. (Andrés Segurado Climent) 
+* Generación y exportación de informes de todo tipo (accediendo a la BD) en variedad de formatos: csv, json, txt... (Guillermo Espinosa Ruíz) 
+* Implementación de un sistema de simulación con variables ajustables (cantidad pedidos, nº repartidores...) usando métodos probabilísticos avanzados, esto permitirá experimentar en diferentes escenarios. (Ignacio Mendoza Díaz) 
 
 ## Instrucciones de instalación y ejecución
 [//]: # (En primer lugar hay que activar el entorno virtual, para ello, ejecuta en la terminal el siguiente comando:)
@@ -26,7 +28,7 @@ Trabajo de prog-2 sistema de gestión de reparto.
 
 **pip install -r requirements.txt**
 
-[//]: # (¡Ya tenemos nuestro entorno y librerías preparado! Puedes probar la aplicación.)
+Haz pip install -r requirements.txt y tendras todo lo necesario para poder ejecutar la aplicación sin problemas.
 
 
 ## Resumen de la API
