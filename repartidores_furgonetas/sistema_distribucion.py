@@ -1,4 +1,6 @@
 from typing import List, Dict, Optional
+from furgonetas import Furgoneta
+from repartidores import Repartidor
 
 class SistemaDistribucion:
     """

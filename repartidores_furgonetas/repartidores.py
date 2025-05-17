@@ -1,4 +1,4 @@
-
+from furgonetas import Furgoneta
 class Repartidor():
     """
     Clase que representa a un repartidor en el sistema de distribución de envíos.
