@@ -17,9 +17,17 @@ enviado: bool
 
     Booleano que define si un paquete ha sido enviado o no
     
-contenido: str
+id_contenido: str
 
     id del artículo que va en un paquete
+
+origen: str
+
+    procedencia del paquete
+
+destino:
+
+    destino del paquete
     
 métodos
 --------------------
@@ -53,7 +61,7 @@ controlador_ver_paquete():
 
 class Paquete:
 
-    def __init__(self,codigo_paquete:str,direccion:str,usuario:str,id_contenido:str):
+    def __init__(self,codigo_paquete:str,direccion:str,usuario:str,id_contenido:str,origen:str,destino:str):
         try:
             if codigo_paquete not in db.get_codigos_paquetes():
                 self.__codigo_paquete=codigo_paquete # el coldigo debe ser unico
@@ -64,13 +72,25 @@ class Paquete:
             print('El código ya existe')
             
         else: # si todo sale bien inicializa el objeto
-            
-            self.direccion=direccion
-            self.usuario=usuario
-            self.enviado=False
-            self.id_contenido=id_contenido
-            print('Paquete creado exitosamente')
-            db.add_paquete( self.__codigo_paquete, self.direccion, self.usuario, self.id_contenido) # lo añade a la bd
+            try:
+                if isinstance(direccion,str):
+                    self.direccion=direccion
+                elif isinstance(usuario,str): 
+                    self.usuario=usuario
+                elif isinstance(id_contenido,str): 
+                    self.id_contenido=id_contenido
+                elif isinstance(origen,str): 
+                    self.origen=origen
+                elif isinstance(destino,str):
+                    self.destino=destino
+                else:
+                    raise TypeError
+            except:
+                print('Error al crear el paquete, hay un atributo que no es del tipo adecuado')
+            else:
+                self.enviado=False
+                print('Paquete creado exitosamente')
+                db.add_paquete(self.__codigo_paquete, self.direccion, self.usuario, self.id_contenido,self.origen,self.destino) # lo añade a la bd
         
     def __str__(self):
         return f'Paquete ({self.mostrar_codigo()}) con direccion {self.direccion} para {self.usuario} '
