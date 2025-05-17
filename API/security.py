@@ -26,7 +26,7 @@ class Security:
         password : str
             La contraseña que será cifrada
         
-        Devuelve:
+        Retorna:
         --------
         str
             La contraseña cifrada como un string
@@ -41,9 +41,9 @@ class Security:
             100000
         )
         
-        #Combinacio'n de salt y hash codificados en base64 para almacenamiento
-        storage = base64.b64encode(salt + key).decode('utf-8')
-        return storage
+        #Combinación de salt y hash codificados en base64 para almacenamiento
+        hashed = base64.b64encode(salt + key).decode('utf-8')
+        return hashed
     
     @staticmethod
     def verify_password(password, storage):
@@ -93,7 +93,7 @@ class Security:
         Devuelve:
         --------
         int
-            200 si la contraseña es válida, 401 si no cumple con los requisitos
+            True si la contraseña es válida, False si no cumple con los requisitos
         '''
         mayus = any(letter.isupper() for letter in password)
         minus = any(letter.islower() for letter in password)
@@ -101,6 +101,6 @@ class Security:
         especial = any(letter in '!@#$%^&*()_+.' for letter in password)
         
         if len(password) < 8 or not (mayus and minus and num and especial):
-            return 401
+            return False
         
-        return 200
+        return True

@@ -1,6 +1,6 @@
 from typing import Optional, List, Dict, Any
-from database.security import Security
-from database.db import DatabaseBase, DB_NAME
+from API.security import Security
+from database.db import DatabaseBase, DB_NAME, AlreadyExistsError
 
 class UserDB(DatabaseBase):
     def __init__(self, db_name=DB_NAME):
@@ -14,12 +14,10 @@ class UserDB(DatabaseBase):
 
     def add_user(self, username: str, password: str, user_type: str):
         """Añade un nuevo usuario a la base de datos"""
-        if Security.check_password_strength(password) == 401:
-            return 401
                 
         existing_user = self.get("users", {"user": username}, fetch_all=False)
         if existing_user:
-            return 409
+            raise AlreadyExistsError('Este usuario ya existe')
                 
         return self.insert("users", {
             "user": username,

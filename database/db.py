@@ -175,3 +175,6 @@ class DatabaseBase:
     def close(self):
         if hasattr(self, 'conn') and self.conn:
             self.conn.close()
+
+class AlreadyExistsError(Exception):
+    pass
