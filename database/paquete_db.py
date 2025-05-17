@@ -1,5 +1,5 @@
 from typing import List, Dict, Optional, Any
-from database.db import DatabaseBase, DB_NAME  # Eliminada la importación de DatabaseError
+from database.db import DatabaseBase, DB_NAME
 
 class PaqueteDB(DatabaseBase):
     """
@@ -12,7 +12,7 @@ class PaqueteDB(DatabaseBase):
     - delete("paquetes", {"codigo_paquete": codigo}) para eliminar paquetes
     """
     
-    def __init__(self, db_name=DB_NAME):  # Usamos DB_NAME como valor por defecto
+    def __init__(self, db_name=DB_NAME):
         super().__init__(db_name)
 
     def get_paquetes(self):
