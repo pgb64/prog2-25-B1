@@ -26,7 +26,7 @@ class Security:
         password : str
             La contraseña que será cifrada
         
-        Retorna:
+        Devuelve:
         --------
         str
             La contraseña cifrada como un string
