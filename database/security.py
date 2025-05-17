@@ -83,9 +83,7 @@ class Security:
     @staticmethod
     def check_password_strength(password):
         '''
-        Valida la fortaleza de la contraseña, asegurando que cumpla con ciertos requisitos:
-        - Longitud mínima de 8 caracteres
-        - Al menos una mayúscula, una minúscula, un número y un carácter especial
+        Valida la fortaleza de la contraseña
         
         Parámetros:
         -----------

@@ -1,63 +1,41 @@
-from typing import List, Dict, Optional
-from database.db import DatabaseBase
-import sqlite3
+from typing import List, Dict, Optional, Any
+from database.db import DatabaseBase, DB_NAME  # Eliminada la importación de DatabaseError
 
 class PaqueteDB(DatabaseBase):
-    def add_paquete(self, codigo_paquete: str, direccion: str, usuario_id: int, contenido: str) -> int:
-        try:
-            cursor = self.conn.cursor()
-            cursor.execute(
-                '''INSERT INTO paquetes (codigo_paquete, direccion, usuario_id, contenido) 
-                VALUES (?, ?, ?, ?)''',
-                (codigo_paquete, direccion, usuario_id, contenido)
-            )
-            self.conn.commit()
-            return 201
-        except sqlite3.IntegrityError:
-            return 409
-        except sqlite3.Error:
-            return 400
+    """
+    Clase para manejar las operaciones de base de datos de paquetes.
+    
+    Usa métodos genéricos de DatabaseBase:
+    - insert("paquetes", {...}) para añadir paquetes
+    - get("paquetes") para obtener todos los paquetes
+    - get("paquetes", {"codigo_paquete": codigo}, fetch_all=False) para buscar por código
+    - delete("paquetes", {"codigo_paquete": codigo}) para eliminar paquetes
+    """
+    
+    def __init__(self, db_name=DB_NAME):  # Usamos DB_NAME como valor por defecto
+        super().__init__(db_name)
 
-    def get_paquetes(self) -> List[Dict]:
-        cursor = self.conn.cursor()
-        cursor.execute('SELECT * FROM paquetes')
-        return [
-            {
-                'codigo_paquete': row[0],
-                'direccion': row[1],
-                'usuario_id': row[2],
-                'contenido': row[3]
-            } for row in cursor.fetchall()
-        ]
+    def get_paquetes(self):
+        """Obtiene todos los paquetes"""
+        return self.get("paquetes")
 
-    def get_paquete_by_codigo(self, codigo_paquete: str) -> Optional[Dict]:
+    def get_paquete_by_codigo(self, codigo_paquete: str):
         """Busca un paquete por su código"""
-        cursor = self.conn.cursor()
-        cursor.execute('SELECT * FROM paquetes WHERE codigo_paquete = ?', (codigo_paquete,))
-        row = cursor.fetchone()
-        if row:
-            return {
-                'codigo_paquete': row[0],
-                'direccion': row[1],
-                'usuario_id': row[2],
-                'contenido': row[3]
-            }
-        return None
+        return self.get("paquetes", {"codigo_paquete": codigo_paquete}, fetch_all=False)
 
-    def get_codigos_paquetes(self) -> List[str]:
-        """Obtiene los códigos de todos los paquetes"""
-        cursor = self.conn.cursor()
-        cursor.execute('SELECT codigo_paquete FROM paquetes')
-        return [row[0] for row in cursor.fetchall()]
-
-    def delete_paquete(self, codigo_paquete: str) -> int:
-        """Elimina un paquete del sistema"""
+    def get_codigos_paquetes(self):
+        """Obtiene los códigos de todos los paquetes."""
         try:
-            cursor = self.conn.cursor()
-            cursor.execute('DELETE FROM paquetes WHERE codigo_paquete = ?', (codigo_paquete,))
-            self.conn.commit()
-            if cursor.rowcount == 0:
-                return 404
-            return 200
-        except sqlite3.Error:
-            return 400
+            resultado = self.execute_query("SELECT codigo_paquete FROM paquetes")
+            if isinstance(resultado, tuple) and resultado[0] is None:
+                return []
+            
+            cursor = resultado
+            rows = cursor.fetchall()
+            return [row['codigo_paquete'] for row in rows]
+        except Exception:
+            return []
+
+    def delete_paquete(self, codigo_paquete: str):
+        """Elimina un paquete del sistema"""
+        return self.delete("paquetes", {"codigo_paquete": codigo_paquete})
