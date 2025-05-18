@@ -178,3 +178,9 @@ class DatabaseBase:
 
 class AlreadyExistsError(Exception):
     pass
+
+class DataNotFoundError(Exception):
+    pass
+
+class DataDoesntMatchError(Exception):
+    pass

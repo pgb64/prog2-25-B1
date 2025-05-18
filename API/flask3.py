@@ -5,23 +5,12 @@ from security import Security
 import database
 
 app = Flask(__name__)
-app.config['JWT_SECRET_KEY'] = 'secret'
+app.config['JWT_SECRET_KEY'] = 'prog2-25-B1'
 jwt = JWTManager(app)
 
 @app.route('/')
 def home():
-    return 'Hello World', 200
-
-#@app.route('/paquetes', methods=['GET', 'POST'])
-class Paquetes:
-    @app.route('/paquetes/<cod>', methods=['GET'])
-    def get(cod):
-        return {f'Paquete {cod}': Paquetes.paquetes[int(cod)]}
-    
-    @app.route('/paquetes/nuevo', methods=['POST'])
-    def post():
-        data = request.form
-        return {'data': data}
+    return 'Home', 200
 
 class Usuario:
     @app.route('/signup', methods=['POST'])
@@ -49,6 +38,7 @@ class Usuario:
                 db = database.UserDB()
                 db.add_user(email, hashed, admin)
             except database.db.AlreadyExistsError:
+                db.close()
                 return 'Este usuario ya existe', 409
             finally:
                 db.close()
@@ -57,28 +47,33 @@ class Usuario:
             return {'token': token}, 200
 
         except TypeError as e: 
-            return f'How did you get here? {e}', 400
+            return f'{e}', 400
 
     @app.route('/login', methods=['POST'])
     def login():
         try:
             email = request.json.get('email', None)
             password = request.json.get('password', None)
-            hashed = hashlib.sha256(password.encode()).hexdigest()
-
             if not email:
                 return 'Missing email', 400
             if not password:
                 return 'Missing password', 400
             
             db = database.UserDB()
-            if hashed == db.get_user(username=email)['password']: #if user in users and hashed == users[email[hash]]
+            user = db.get_user(username=email)
+            if not user:
+                db.close()
+                raise database.db.DataNotFoundError('El usuario no existe')
+            
+            if Security.verify_password(password, user['password']):
+                db.close()
                 return {'token': create_access_token(identity=email)}, 200
+            else:
+                db.close()
+                raise database.db.DataDoesntMatchError('Contraseña incorrecta')
             
-            return 'Something went wrong', 500
-            
-        except TypeError as e:
-            return f'How did you get here? {e}', 400
+        except Exception as e:
+            return f'{e}', 400
 
 @app.route('/test', methods=['GET'])
 @jwt_required()

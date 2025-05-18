@@ -1,6 +1,7 @@
-import hashlib
 import os
+import hmac
 import base64
+import hashlib
 
 class Security:
     '''
@@ -65,9 +66,8 @@ class Security:
         try:
             #Decodificaa la combinacion de salt+hash
             decoded = base64.b64decode(storage.encode('utf-8'))
-            
             salt = decoded[:32]
-            
+            stored_key = decoded[32:]
             key = hashlib.pbkdf2_hmac(
                 'sha256',
                 password.encode('utf-8'),
@@ -76,7 +76,7 @@ class Security:
             )
             
             #Compararamos el hash generado con el almacenado
-            return decoded[32:] == key
+            return hmac.compare_digest(key, stored_key)
         except:
             return False
     

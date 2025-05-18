@@ -1,6 +1,6 @@
 from typing import Optional, List, Dict, Any
 from API.security import Security
-from database.db import DatabaseBase, DB_NAME, AlreadyExistsError
+from database.db import DatabaseBase, DB_NAME, AlreadyExistsError, DataNotFoundError, DataDoesntMatchError
 
 class UserDB(DatabaseBase):
     def __init__(self, db_name=DB_NAME):
@@ -21,7 +21,7 @@ class UserDB(DatabaseBase):
                 
         return self.insert("users", {
             "user": username,
-            "password": Security.hash_password(password),
+            "password": password, #no es necesario que password sea hasheado porque la API ya pasa un hash como parámetro
             "type": user_type
         })
 
@@ -49,17 +49,6 @@ class UserDB(DatabaseBase):
         """Obtiene todos los usuarios"""
         users = self.get("users")
         return [{'id': u['id'], 'user': u['user'], 'password': u['password'], 'type': u['type']} for u in users]
-        
-    def login(self, username: str, password: str):
-        """Verifica credenciales de inicio de sesión"""
-        user = self.get_user(username=username)
-        if not user:
-            return 400
-            
-        if not Security.verify_password(password, user['password']):
-            return 401
-            
-        return 200
 
     def add_personal_data(self, user_id: int, fecha: str, direccion: str, cp: str, ciudad: str, genero: str):
         """Añade datos personales a un usuario"""
