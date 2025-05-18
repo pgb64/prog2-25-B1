@@ -1,6 +1,6 @@
+from _sqlite3 import IntegrityError, Error
 from flask import Flask, request
 from flask_jwt_extended import JWTManager, jwt_required, create_access_token, get_jwt_identity
-import hashlib
 from security import Security
 import database
 
@@ -12,13 +12,22 @@ jwt = JWTManager(app)
 def home():
     return 'Home', 200
 
+def execute_query_error_handler(funct):
+    try:
+        funct()
+    except IntegrityError as e:
+        print(f"Error de integridad: {e}")
+        return None, 409
+    except Error as e:
+        return None, 400
+
 class Usuario:
     @app.route('/signup', methods=['POST'])
     def signup():
         try:
             email = request.json.get('email', None)
             password = request.json.get('password', None)
-            admin = request.json.get('admin', False)
+            admin = True if '@vendedor' in email else False
 
             if not email:
                 return 'Missing email', 400
@@ -44,7 +53,7 @@ class Usuario:
                 db.close()
 
             token = create_access_token(identity=email)
-            return {'token': token}, 200
+            return {'token': token}, 201
 
         except TypeError as e: 
             return f'{e}', 400
@@ -74,6 +83,84 @@ class Usuario:
             
         except Exception as e:
             return f'{e}', 400
+        
+    @app.route('/is_admin', methods=['GET'])
+    def is_admin():
+        email = request.json.get('email', None)
+        db = database.UserDB()
+        is_admin = db.is_admin(email)
+        db.close()
+        return is_admin, 200
+    
+class Articulo:
+    @app.route('/articulos', methods=['POST'])
+    def add():
+        data = request.get_json()
+        db = database.ArticuloDB()
+        db.insert("articulos", data)
+        db.close()
+        return 201
+    
+    @app.route('/articulos', methods=['GET'])
+    def get():
+        db = database.ArticuloDB()
+        data = db.get("articulos")
+        db.close()
+        return data, 200
+
+    @app.route('/articulos', methods=['DELETE'])
+    def delete():
+        cod = request.json.get('cod')
+        db = database.ArticuloDB()
+        db.delete("articulos", {'codigo': cod})
+        db.close()
+        return 204
+
+class Paquete:
+    @app.route('/paquetes/<str:cod>', methods=['GET'])
+    def get_by_cod(cod: str):
+        db = database.PaqueteDB()
+        info = db.get_paquete_by_codigo(cod)
+        db.close()
+        if info == [] or info == {}:
+            return 'Código de paquete no encontrado', 404
+        return info, 200
+    
+    @app.route('/pedidos', methods=['POST'])
+    def add():
+        return 'Lo sentimos, aún estamos trabajando en ello', 501
+    
+class Repartidor:
+    @app.route('/repartidores', methods=['POST'])
+    def add():
+        data = request.get_json()
+        db = database.RepartidorDB()
+        db.insert("repartidores", data)
+        db.close()
+        return 201
+    
+    @app.route('/repartidores', methods=['GET'])
+    def get():
+        db = database.RepartidorDB()
+        data = db.get("repartidores")
+        db.close()
+        return data, 200
+    
+    @app.route('/repartidores', methods=['DELETE'])
+    def delete():
+        id = request.json.get('id')
+        db = database.RepartidorDB()
+        try:
+            db.delete("repartidores", {"id": id})
+        except database.db.DataNotFoundError as e:
+            return {e}, 400
+        db.close()
+        return 204
+    
+class Stats:
+    @app.route('/stats', methods=['GET'])
+    def get():
+        return 'Not yet implemented', 501
 
 @app.route('/test', methods=['GET'])
 @jwt_required()

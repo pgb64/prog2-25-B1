@@ -1,7 +1,7 @@
-from database.db import Db
+from database import PaqueteDB, ArticuloDB
+import requests
 
-db=Db()
-
+db=ArticuloDB()
 class Articulo:
     '''
     atrubutos
@@ -74,14 +74,14 @@ class Articulo:
 
     dicc_proced = {}
 
-    def __init__(self,nombre: str,cantidad: int,proveedor: str,codigo: str,descripcion: str,procedencia: str):
+    def __init__(self,nombre: str,cantidad: int,proveedor: str,codigo: str,descripcion: str,procedencia: str, url: str):
         try:
             if codigo not in db.get_codigos_articulos():
                 
                 self.__codigo=codigo # es necesario que sea único
                 
             elif codigo in db.get_codigos_articulos(): # si no lo es da error
-                raise KeyError
+                raise ValueError
         except:
             print('ERROR: Código duplicado')
         else: # si todo sale bien inicializa el objeto
@@ -96,7 +96,8 @@ class Articulo:
                 print('Procedencia no válida')
             else:
                 #introduce el objeto sin errores a la base de datos
-                db.add_articulo(nombre=self.nombre,codigo=self.__codigo,cantidad=self.cantidad,proveedor=self.proveedor,descripcion=self.descripcion)
+                datos = {'nombre': self.nombre, 'codigo': self.__codigo, 'cantidad': self.cantidad, 'proveedor': self.proveedor, 'descripcion': self.descripcion}
+                requests.post(f'{url}/articulos', json=datos)
                 print('Articulo creado exitosamente')
     
     @classmethod

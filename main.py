@@ -1,12 +1,15 @@
-import subprocess
-import os
 import requests
 import menu
 
 def main():
+    url = 'https://ruukha.pythonanywhere.com'
+
+    #inicio
     print('--- Gestión de repartos ---')
     print('1. Iniciar sesión')
     print('2. Crear cuenta')
+
+    #bucle de selección
     while True:
         op = input('Selección: ')
         try:
@@ -17,14 +20,16 @@ def main():
         except:
             print('Introduce una selección válida.')
             continue
+
+    #bucle para introducir la cuenta
     while True:
         email = input('Introduce tu correo: ')
         password = input('Introduce tu contraseña: ')
         credentials = {'email': email, 'password': password}
         if op == 1:
-            res = requests.post('https://ruukha.pythonanywhere.com/login', json=credentials)
+            res = requests.post(f'{url}/login', json=credentials)
         if op == 2:
-            res = requests.post('https://ruukha.pythonanywhere.com/signup', json=credentials)
+            res = requests.post(f'{url}/signup', json=credentials)
 
         try:
             token = res.json()["token"]
@@ -38,6 +43,12 @@ def main():
                     continue
                 else:
                     break
+
+    #abrir el menú
+    if requests.get(f'{url}/is_admin', json={'email': email}):
+        menu.menu_vendedor(url, email)
+    else:
+        menu.menu_usuario(url)
 
 
 if __name__ == '__main__':

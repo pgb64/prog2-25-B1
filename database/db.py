@@ -19,18 +19,12 @@ class DatabaseBase:
         self._custom_queries.setdefault(table, {})[query_name] = query_string
     
     def execute_query(self, query: str, params: Tuple = (), commit: bool = False):
-        try:
-            cursor = self.conn.cursor()
-            cursor.execute(query, params)
-            if commit:
-                self.conn.commit()
-                return cursor.rowcount
-            return cursor
-        except sqlite3.IntegrityError as e:
-            print(f"Error de integridad: {e}")
-            return None, 409
-        except sqlite3.Error as e:
-            return None, 400
+        cursor = self.conn.cursor()
+        cursor.execute(query, params)
+        if commit:
+            self.conn.commit()
+            return cursor.rowcount
+        return cursor
     
     def get(self, table: str, conditions: Dict = None, fetch_all: bool = True):
         """Obtiene registros de una tabla"""
@@ -68,7 +62,7 @@ class DatabaseBase:
         
         if isinstance(resultado, tuple):
             return resultado[1]
-        return 201
+        return 0 #201
     
     def update(self, table: str, data: Dict, conditions: Dict):
         """Actualiza registros y retorna el código de estado"""
@@ -83,7 +77,9 @@ class DatabaseBase:
         resultado = self.execute_query(query, tuple(params), commit=True)
         if isinstance(resultado, tuple):
             return resultado[1]
-        return 404 if resultado == 0 else 200
+        if resultado == 0:
+            raise DataNotFoundError #404
+        return 0 #200
     
     def delete(self, table: str, conditions: Dict):
         """Elimina registros y retorna el código de estado"""
@@ -94,7 +90,9 @@ class DatabaseBase:
         
         if isinstance(resultado, tuple):
             return resultado[1]
-        return 404 if resultado == 0 else 200
+        if resultado == 0:
+            raise DataNotFoundError('El repartidor no existe')
+        return 200
     
     def execute_custom_query(self, table: str, query_name: str, params: Tuple = (), fetch_all: bool = True):
         """Ejecuta una consulta personalizada registrada previamente"""

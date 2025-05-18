@@ -1,6 +1,6 @@
+import requests
 
-
-def menu_usuario():
+def menu_usuario(url):
     thread = []
     start = """Selecciona una opción:
 1. Hacer una consulta
@@ -16,12 +16,15 @@ def menu_usuario():
 2. Un pedido
 3. Atrás""")
             case [1, 1]:
-                print('Datos') #datos de los articulos (data.get_articulos())
+                print('--- Datos ---') #datos de los articulos (data.get_articulos())
+                info = requests.get(f'{url}/articulos')
+                print(info)
                 thread = []
                 continue
             case [1, 2]:
-                cod = input('Código del pedido: ')
-                print(f'Pedido {cod}') #datos del pedido suministrado (data.get_paquete_by_codigo(cod))
+                cod = input('Código del pedido: ') 
+                info = requests.get(f'{url}/pedidos/{cod}') #datos del pedido suministrado (data.get_paquete_by_codigo(cod))
+                print(info.text)
                 thread = []
                 continue
             case [1, 3]:
@@ -30,7 +33,7 @@ def menu_usuario():
                 continue
             case [2]:
                 direccion = input('Dirección: ')
-                #paq.controlador_crear_paquete(direccion, usuario)
+                requests.post(f'{url}/paquetes', json={'direccion': direccion})
                 thread = []
                 continue
             case [3]:
@@ -50,7 +53,7 @@ def menu_usuario():
             print('Introduce una selección válida.')
             continue
         
-def menu_vendedor():
+def menu_vendedor(url, email):
     thread = []
     start = """Selecciona una opción:
 1. Realizar gestiones
@@ -80,7 +83,7 @@ def menu_vendedor():
                         except ValueError:
                             print('Ha de ser un número entero.')
                             continue
-                #data.add_articulo(nom, cant, usuario, desc)
+                requests.post(f'{url}/articulo', json={"nombre": nom, "cantidad": cant, "proveedor": email, "descripcion": desc})
                 thread.pop()
                 continue
             case [1, 1, 2]:
@@ -90,7 +93,7 @@ def menu_vendedor():
                             break
                         except ValueError:
                             print('Ha de ser un número.')
-                #data.delete_articulo(cod)
+                requests.delete(f'{url}/articulo', json={'codigo': cod})
                 thread.pop()
                 continue
 
@@ -109,24 +112,20 @@ def menu_vendedor():
                 while True:
                         try:
                             nom = input('Nombre: ')
-                            id = input('DNI: ')
+                            tlf = input('Telefono: ')
+                            prov = input('Provincia: ')
+                            vehiculo = input('Vehiculo: ')
                             break
                         except ValueError:
                             print('Ha de ser un número entero.')
                             continue
-                #data.add_articulo(nom, cant, usuario, desc)
+                requests.post(f'{url}/repartidores', json={'nombre': nom, 'telefono': tlf, 'provincia': prov, 'vehiculo': vehiculo})
                 thread.pop()
                 continue
 
             case [1, 2, 2]:
-                while True:
-                        cod = input('DNI: ')
-                        #if cod not in data.repartidores:
-                        #    print('Repartidor no encontrado')
-                        #else:
-                        #    break
-                        break
-                #data.delete_repartidor(cod)
+                cod = input('DNI: ')
+                requests.delete(f'{url}/repartidores', json={"id": id})
                 thread.pop()
                 continue
 
@@ -148,17 +147,20 @@ def menu_vendedor():
 4. Atrás""")
                 
             case [2, 1]:
-                #print(data.get_artículos)
+                res = requests.get(f'{url}/articulos')
+                print(res.json())
                 thread.pop()
                 continue
 
             case [2, 2]:
-                #print(data.get_repartidores)
+                res = requests.get(f'{url}/repartidores')
+                print(res.json())
                 thread.pop()
                 continue
 
             case [2, 3]:
-                #print(data.get_data(cat))??
+                res = requests.get(f'{url}/stats')
+                print(res.text)
                 thread.pop()
                 continue
 
