@@ -174,6 +174,8 @@ class DatabaseBase:
         if hasattr(self, 'conn') and self.conn:
             self.conn.close()
 
+
+#No recuerdo que esto estuviera aqui, pero lo dejo por si acaso
 class AlreadyExistsError(Exception):
     pass
 

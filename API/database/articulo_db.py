@@ -1,5 +1,5 @@
 from typing import Optional, List, Dict, Any
-from database.db import DatabaseBase, DB_NAME  # Eliminada la importación de DatabaseError
+from database.db import DatabaseBase, DB_NAME
 
 class ArticuloDB(DatabaseBase):
     """

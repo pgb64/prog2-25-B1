@@ -1,5 +1,5 @@
 from typing import Optional, List, Dict, Any
-from API.security import Security
+from security import Security 
 from database.db import DatabaseBase, DB_NAME, AlreadyExistsError, DataNotFoundError, DataDoesntMatchError
 
 class UserDB(DatabaseBase):
