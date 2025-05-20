@@ -8,15 +8,20 @@ def main():
     print('--- Gestión de repartos ---')
     print('1. Iniciar sesión')
     print('2. Crear cuenta')
+    print('3. Salir')
 
     #bucle de selección
     while True:
         op = input('Selección: ')
         try:
-            if op not in ['1', '2']:
+            if op not in ['1', '2', '3']:
                 raise TypeError
-            op = int(op)
+            
+            if op == '3':
+                return 0
+            
             break
+
         except:
             print('Introduce una selección válida.')
             continue
@@ -26,20 +31,20 @@ def main():
         email = input('Introduce tu correo: ')
         password = input('Introduce tu contraseña: ')
         credentials = {'email': email, 'password': password}
-        if op == 1:
+        if op == '1':
             res = requests.post(f'{url}/login', json=credentials)
-        if op == 2:
+        if op == '2':
             res = requests.post(f'{url}/signup', json=credentials)
 
         try:
             token = res.json()["token"]
             break
-        except Exception as e:
+        except:
             print(res.text)
             if res.text == 'Este usuario ya existe':
                 op = input('Quiere iniciar sesión? (s/n): ')
                 if op == 's':
-                    op = 1
+                    op = '1'
                     continue
                 else:
                     break

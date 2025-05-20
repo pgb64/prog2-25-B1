@@ -16,6 +16,9 @@ def menu_usuario(url):
 2. Un pedido
 3. Atrás""")
             case [1, 1]:
+                '''
+                q
+                '''
                 print('--- Datos ---') #datos de los articulos (data.get_articulos())
                 info = requests.get(f'{url}/articulos')
                 print(info)
