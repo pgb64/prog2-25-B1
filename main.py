@@ -50,10 +50,10 @@ def main():
                     op = '1'
                     continue
                 else:
-                    break
+                    return 0
 
     #abrir el menú
-    if requests.get(f'{url}/is_admin', json={'email': email}):
+    if 'True' in requests.get(f'{url}/is_admin', json={'email': email}):
         menu.menu_vendedor(url, email)
     else:
         menu.menu_usuario(url)

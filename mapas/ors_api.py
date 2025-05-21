@@ -1,6 +1,6 @@
 import openrouteservice
 from geopy.geocoders import Nominatim
-from sedes import Sede
+from mapas import sedes
 
 class OpenRouteService:
     '''
@@ -360,7 +360,7 @@ class OpenRouteService:
             Nombre de la sede más cercana o None si la lista está vacía.
         """
         if not lista_sedes:
-            lista_sedes = [sede[0] for sede in Sede.info_sedes()]
+            lista_sedes = [sede[0] for sede in sedes.Sede.info_sedes()]
 
         sede_cercana = None
         distancia_min = None
@@ -380,12 +380,12 @@ if __name__ == "__main__":
     coords = ors.obtener_coords("ruperto chapí 39, novelda")
     print(coords)
     
-    Sede.cargar_csv() # Si no se pone devuelve None
-    sede = ors.sede_mas_cercana(coords, Sede.info_sedes())
+    sedes.Sede.cargar_csv() # Si no se pone devuelve None
+    sede = ors.sede_mas_cercana(coords, sedes.Sede.info_sedes())
     print(f"La sede más cercana es: {sede}")
 
     #Ruta de sede a la coordenada
-    cord_sede = Sede.sede_coord(sede)
+    cord_sede = sedes.Sede.sede_coord(sede)
     ruta = ors.obtener_ruta(coords, cord_sede, incluir_pasos=True)
     print(ruta)
     print(OpenRouteService.mostrar_ruta(ruta))
