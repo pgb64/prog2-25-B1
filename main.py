@@ -53,7 +53,9 @@ def main():
                     return 0
 
     #abrir el menú
-    if 'True' in requests.get(f'{url}/is_admin', json={'email': email}):
+    res = requests.get(f'{url}/is_admin', json={'email': email}).text
+    print(res)
+    if res == 'True':
         menu.menu_vendedor(url, email)
     else:
         menu.menu_usuario(url)

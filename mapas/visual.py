@@ -2,8 +2,8 @@
 import os
 import folium
 import webbrowser
-from sedes import Sede
-from ors_api import OpenRouteService
+from mapas import sedes
+from mapas import ors_api
 import openrouteservice  
 
 class MapaGestor:
@@ -25,10 +25,10 @@ class MapaGestor:
         '''
         # Crea el mapa con folium
         mapa = folium.Map(location=self.centro, zoom_start=self.zoom)
-        Sede.cargar_csv() # Cargar las sedes desde el csv
+        sedes.Sede.cargar_csv() # Cargar las sedes desde el csv
         
         # Añade un marcador para cada una de las sedes
-        for nombre, coords in Sede.info_sedes():
+        for nombre, coords in sedes.Sede.info_sedes():
             folium.Marker(
                 location=coords,
                 popup=nombre,
@@ -65,18 +65,18 @@ class MapaGestor:
         # Crea el mapa con folium
         mapa = folium.Map(location=coords_destino, zoom_start=13)
         # Carga las sedes desde el csv
-        Sede.cargar_csv()
+        sedes.Sede.cargar_csv()
         # Añade a una lista las coordenadas de todas las sedes
-        sedes_coords = [Sede.sede_coord(sede[0]) for sede in Sede.info_sedes()]
+        sedes_coords = [sedes.Sede.sede_coord(sede[0]) for sede in sedes.Sede.info_sedes()]
 
         # Instancia de OpenRouteService y obtiene la sede más cercana
-        ors = OpenRouteService()
-        sede_cercana = ors.sede_mas_cercana(coords_destino, Sede.info_sedes())
+        ors = ors_api.OpenRouteService()
+        sede_cercana = ors.sede_mas_cercana(coords_destino, sedes.Sede.info_sedes())
 
         if sede_cercana is None:
             return
         # Obtener coordenadas de la sede más cercana
-        coords_sede = Sede.sede_coord(sede_cercana)
+        coords_sede = sedes.Sede.sede_coord(sede_cercana)
 
         # Añadir marcadores al destino y a la sede
         folium.Marker(
@@ -132,16 +132,3 @@ class MapaGestor:
         '''
         self.generar_mapa_destino(coords_destino)
         self.abrir_mapa()
-
-
-# ---------- EJECUCIÓN DE PRUEBA ----------
-if __name__ == "__main__":
-    ors = OpenRouteService()
-    direccion = 'Ruperto chapí 39, novelda, 03660'
-    destino = ors.obtener_coords(direccion)
-
-    gestor_sedes = MapaGestor(archivo="temporal/mapa_sedes.html")
-    gestor_sedes.mostrar_mapa_sedes()
-
-    gestor_ruta = MapaGestor(archivo="temporal/ruta_reparto.html")
-    gestor_ruta.mostrar_mapa_destino(destino)

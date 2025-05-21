@@ -1,5 +1,5 @@
 import requests
-from mapas import ors_api
+from mapas import ors_api, visual
 
 def menu_usuario(url):
     thread = []
@@ -172,7 +172,7 @@ def menu_vendedor(url, email):
                 continue
 
             case [2, 3]:
-                #
+                visual.MapaGestor().mostrar_mapa_sedes()
                 thread.pop()
                 continue
 
