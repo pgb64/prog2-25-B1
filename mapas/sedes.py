@@ -166,7 +166,3 @@ class Sede:
         return None
     
 
-if __name__ == "__main__":
-    # Probar el pkl
-    Sede.cargar_csv()
-    Sede.guardar_pickle()
