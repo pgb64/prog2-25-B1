@@ -7,7 +7,7 @@ class Sede:
     # Atributos de clase
     sedes = []
     _csv_path = "mapas/sedes.csv"       # Archivo csv
-    _pkl_mod = "mapas/sedes_mod.pkl"    # Archivo pickle
+    _pkl_mod = "mapas/sedes_copia.pkl"    # Archivo pickle
 
 
     def __init__(self, nombre : str, provincia : str, coords : str):
@@ -166,4 +166,7 @@ class Sede:
         return None
     
 
-
+if __name__ == "__main__":
+    # Probar el pkl
+    Sede.cargar_csv()
+    Sede.guardar_pickle()
