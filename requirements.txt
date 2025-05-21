@@ -6,3 +6,4 @@ pandas
 flask-jwt-extended
 openrouteservice
 geopy
+folium
