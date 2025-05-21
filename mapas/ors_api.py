@@ -23,7 +23,7 @@ class OpenRouteService:
             raise
 
 
-    def obtener_cords(self, direccion: str) -> tuple | None:
+    def obtener_coords(self, direccion: str) -> tuple | None:
         '''
         Obtiene la latitud y longitud a partir de una dirección pasado como string.
 
@@ -46,14 +46,14 @@ class OpenRouteService:
         
         return None
 
-    def intentar_ruta(self, cord_origen : tuple, cord_destino : tuple, incluir_pasos : bool = False) -> dict:
+    def intentar_ruta(self, coord_origen : tuple, coord_destino : tuple, incluir_pasos : bool = False) -> dict:
         '''
         Intenta obtener la ruta entre dos coordenadas.
         Parámetros:
         -----------
-        cord_origen : tuple
+        coord_origen : tuple
             Coordenadas de origen (latitud, longitud)
-        cord_destino : tuple
+        coord_destino : tuple
             Coordenadas de destino (latitud, longitud)
         incluir_pasos : bool
             Si se deben incluir los pasos de la ruta en las instrucciones
@@ -67,7 +67,7 @@ class OpenRouteService:
         '''
         # Diccionario con los parametros para la ruta
         parametros_ruta = {
-            'coordinates': [cord_origen, cord_destino], # Coordenadas de origen y destino
+            'coordinates': [coord_origen, coord_destino], # Coordenadas de origen y destino
             'profile': 'driving-car', # Conducción en vehículo
             'instructions': incluir_pasos, # Instrucciones de la ruta
             'geometry': False, # No se devuelve la geometría de la ruta
@@ -127,16 +127,94 @@ class OpenRouteService:
         else:
             metros = int(km * 1000)
             return f"{metros} m"
+    
+    @staticmethod
+    def obtener_provincia_por_cp(codigo_postal):
+        """
+        Dada un código postal de 5 dígitos de España, devuelve la provincia a la que pertenece.
+
+        Args:
+            codigo_postal (str): El código postal de 5 dígitos (ej. "03560").
+
+        Returns:
+            str: El nombre de la provincia o "Provincia no encontrada" si el código no es válido.
+        """
+
+        if not isinstance(codigo_postal, str) or len(codigo_postal) != 5 or not codigo_postal.isdigit():
+            return "Código postal no válido. Debe ser una cadena de 5 dígitos."
+
+        prefijo = codigo_postal[:2]
+
+        provincias = {
+            "01": "Álava",
+            "02": "Albacete",
+            "03": "Alicante",
+            "04": "Almería",
+            "05": "Ávila",
+            "06": "Badajoz",
+            "07": "Islas Baleares",
+            "08": "Barcelona",
+            "09": "Burgos",
+            "10": "Cáceres",
+            "11": "Cádiz",
+            "12": "Castellón",
+            "13": "Ciudad Real",
+            "14": "Córdoba",
+            "15": "A Coruña",
+            "16": "Cuenca",
+            "17": "Girona",
+            "18": "Granada",
+            "19": "Guadalajara",
+            "20": "Gipuzkoa",
+            "21": "Huelva",
+            "22": "Huesca",
+            "23": "Jaén",
+            "24": "León",
+            "25": "Lleida",
+            "26": "La Rioja",
+            "27": "Lugo",
+            "28": "Madrid",
+            "29": "Málaga",
+            "30": "Murcia",
+            "31": "Navarra",
+            "32": "Ourense",
+            "33": "Asturias",
+            "34": "Palencia",
+            "35": "Las Palmas",
+            "36": "Pontevedra",
+            "37": "Salamanca",
+            "38": "Santa Cruz de Tenerife",
+            "39": "Cantabria",
+            "40": "Segovia",
+            "41": "Sevilla",
+            "42": "Soria",
+            "43": "Tarragona",
+            "44": "Teruel",
+            "45": "Toledo",
+            "46": "Valencia",
+            "47": "Valladolid",
+            "48": "Vizcaya",
+            "49": "Zamora",
+            "50": "Zaragoza",
+            "51": "Ceuta",
+            "52": "Melilla"
+        }
+
+        return provincias.get(prefijo, "Provincia no encontrada")
 
 
-    def obtener_ruta(self, origen_cords: tuple, destino_cords: tuple, incluir_pasos=False) -> tuple | None:
+
+
+
+
+    def obtener_ruta(self, origen_coords: tuple, destino_coords: tuple, incluir_pasos=False) -> tuple | None:
         '''
         Obtiene la ruta entre dos coordenadas.
         Parámetros:
         -----------
-        origen_cords : tuple
+        origen_coords : tuple
             Coordenadas de origen (latitud, longitud)
-        destino_cords : tuple
+        destino_coords : tuple
             Coordenadas de destino (latitud, longitud)
         incluir_pasos : bool
             Si se deben incluir los pasos de la ruta en las instrucciones
@@ -148,14 +226,14 @@ class OpenRouteService:
         None
             Si no se encuentra la ruta o hay un error.
         '''
-        if origen_cords is None or destino_cords is None:
+        if origen_coords is None or destino_coords is None:
             # Si las coordenadas son inválidas
             print("Coordenadas de origen o destino no válidas para la ruta.")
             return None
         
         # Se invierte el orden de las coordenadas para la API (cambio imprescindible)
-        origen = [origen_cords[1], origen_cords[0]]
-        destino = [destino_cords[1], destino_cords[0]]
+        origen = [origen_coords[1], origen_coords[0]]
+        destino = [destino_coords[1], destino_coords[0]]
 
         try:
             # Intenta obtener la ruta entre las coordenadas
@@ -210,12 +288,12 @@ class OpenRouteService:
         print('No se han encontrado rutas válidas.')
         return None
 
-    def buscar_punto_valido(self, cord : tuple, radio_grados : float=0.001, pasos : int=5) -> tuple | None:
+    def buscar_punto_valido(self, coord : tuple, radio_grados : float=0.001, pasos : int=5) -> tuple | None:
         '''
         Busca un punto válido en un radio de 0.001 grados alrededor de las coordenadas dadas.
         Parámetros:
         -----------
-        cord : tuple
+        coord : tuple
             Coordenadas (latitud, longitud) que se desea validar
         radio_grados : float
             Radio en grados para buscar un punto válido
@@ -228,7 +306,7 @@ class OpenRouteService:
         None
             Si no se encuentra un punto válido
         '''
-        lon0, lat0 = cord
+        lon0, lat0 = coord
 
         # Se busca un punto válido en un radio de 0.001 grados
         for dx in range(-pasos, pasos + 1):
@@ -248,4 +326,8 @@ class OpenRouteService:
                     else:
                         raise
         return None
+
+
+
+
 
