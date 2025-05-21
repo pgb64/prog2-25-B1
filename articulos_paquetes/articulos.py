@@ -1,7 +1,14 @@
+<<<<<<< HEAD
 from database import PaqueteDB, ArticuloDB
 import requests
 
 db=ArticuloDB()
+=======
+from database.db import Db
+
+db=Db()
+
+>>>>>>> main
 class Articulo:
     '''
     atrubutos
@@ -74,14 +81,22 @@ class Articulo:
 
     dicc_proced = {}
 
+<<<<<<< HEAD
     def __init__(self,nombre: str,cantidad: int,proveedor: str,codigo: str,descripcion: str,procedencia: str, url: str):
+=======
+    def __init__(self,nombre: str,cantidad: int,proveedor: str,codigo: str,descripcion: str,procedencia: str):
+>>>>>>> main
         try:
             if codigo not in db.get_codigos_articulos():
                 
                 self.__codigo=codigo # es necesario que sea único
                 
             elif codigo in db.get_codigos_articulos(): # si no lo es da error
+<<<<<<< HEAD
                 raise ValueError
+=======
+                raise KeyError
+>>>>>>> main
         except:
             print('ERROR: Código duplicado')
         else: # si todo sale bien inicializa el objeto
@@ -96,8 +111,12 @@ class Articulo:
                 print('Procedencia no válida')
             else:
                 #introduce el objeto sin errores a la base de datos
+<<<<<<< HEAD
                 datos = {'nombre': self.nombre, 'codigo': self.__codigo, 'cantidad': self.cantidad, 'proveedor': self.proveedor, 'descripcion': self.descripcion}
                 requests.post(f'{url}/articulos', json=datos)
+=======
+                db.add_articulo(nombre=self.nombre,codigo=self.__codigo,cantidad=self.cantidad,proveedor=self.proveedor,descripcion=self.descripcion)
+>>>>>>> main
                 print('Articulo creado exitosamente')
     
     @classmethod
