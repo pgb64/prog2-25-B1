@@ -1,0 +1,8 @@
+flask
+requests
+bcrypt
+dotenv
+pandas
+flask-jwt-extended
+openrouteservice
+geopy
