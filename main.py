@@ -12,7 +12,7 @@ def main():
 
     #bucle de selección
     while True:
-        op = input('Selección: ')
+        op = input('\nSelección: ')
         try:
             if op not in ['1', '2', '3']:
                 raise TypeError
@@ -28,7 +28,7 @@ def main():
 
     #bucle para introducir la cuenta
     while True:
-        email = input('Introduce tu correo: ')
+        email = input('\nIntroduce tu correo: ')
         password = input('Introduce tu contraseña: ')
         credentials = {'email': email, 'password': password}
         if op == '1':
@@ -41,6 +41,9 @@ def main():
             break
         except:
             print(res.text)
+            if res.text == 'El usuario no existe':
+                print('\nCrear una cuenta:')
+                op = '2'
             if res.text == 'Este usuario ya existe':
                 op = input('Quiere iniciar sesión? (s/n): ')
                 if op == 's':

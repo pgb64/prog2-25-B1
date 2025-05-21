@@ -1,8 +1,9 @@
 import requests
+from mapas import ors_api
 
 def menu_usuario(url):
     thread = []
-    start = """Selecciona una opción:
+    start = """\nSelecciona una opción:
 1. Hacer una consulta
 2. Hacer un pedido
 3. Salir"""
@@ -11,21 +12,18 @@ def menu_usuario(url):
             case []:
                 print(start)
             case [1]:
-                print("""Consultar...
+                print("""\nConsultar...
 1. El catálogo
 2. Un pedido
 3. Atrás""")
             case [1, 1]:
-                '''
-                q
-                '''
-                print('--- Datos ---') #datos de los articulos (data.get_articulos())
+                print('\n--- Datos ---') #datos de los articulos (data.get_articulos())
                 info = requests.get(f'{url}/articulos')
                 print(info)
                 thread = []
                 continue
             case [1, 2]:
-                cod = input('Código del pedido: ') 
+                cod = input('\nCódigo del pedido: ') 
                 info = requests.get(f'{url}/pedidos/{cod}') #datos del pedido suministrado (data.get_paquete_by_codigo(cod))
                 print(info.text)
                 thread = []
@@ -35,8 +33,17 @@ def menu_usuario(url):
                 thread.pop()
                 continue
             case [2]:
-                direccion = input('Dirección: ')
-                requests.post(f'{url}/paquetes', json={'direccion': direccion})
+                art = input('\nCódigo del artículo: ')
+                calle = input('Calle: ')
+                num = input('Numero: ')
+                cod_p = input('Codigo postal: ')
+                provincia = input('Provincia: ')
+                direccion = (calle, num, cod_p, provincia)
+                requests.post(f'{url}/paquetes', json={'direccion': direccion, 'articulo': art})
+                direccion = f'{calle}, {num}, {cod_p}, {provincia}'
+                maps = ors_api.OpenRouteService()
+                coords = maps.obtener_coords(direccion)
+                print(coords)
                 thread = []
                 continue
             case [3]:

@@ -19,7 +19,7 @@ def execute_query_error_handler(funct):
         print(f"Error de integridad: {e}")
         return None, 409
     except Error as e:
-        return None, 400
+        return {e}, 400
 
 class Usuario:
     @app.route('/signup', methods=['POST'])
@@ -33,7 +33,7 @@ class Usuario:
                 return 'Missing email', 400
             if not password:
                 return 'Missing password', 400
-            
+
             if not Security.check_password_strength(password):
                 return """The password isn't strong enough, it should, at least:
                 - Be 8 characters long
@@ -55,7 +55,7 @@ class Usuario:
             token = create_access_token(identity=email)
             return {'token': token}, 201
 
-        except TypeError as e: 
+        except TypeError as e:
             return f'{e}', 400
 
     @app.route('/login', methods=['POST'])
@@ -67,23 +67,23 @@ class Usuario:
                 return 'Missing email', 400
             if not password:
                 return 'Missing password', 400
-            
+
             db = database.UserDB()
             user = db.get_user(username=email)
             if not user:
                 db.close()
                 raise database.db.DataNotFoundError('El usuario no existe')
-            
+
             if Security.verify_password(password, user['password']):
                 db.close()
                 return {'token': create_access_token(identity=email)}, 200
             else:
                 db.close()
                 raise database.db.DataDoesntMatchError('Contraseña incorrecta')
-            
+
         except Exception as e:
             return f'{e}', 400
-        
+
     @app.route('/is_admin', methods=['GET'])
     def is_admin():
         email = request.json.get('email', None)
@@ -91,25 +91,25 @@ class Usuario:
         is_admin = db.is_admin(email)
         db.close()
         return is_admin, 200
-    
+
 class Articulo:
     @app.route('/articulos', methods=['POST'])
-    def add():
+    def add_art():
         data = request.get_json()
         db = database.ArticuloDB()
         db.insert("articulos", data)
         db.close()
         return 201
-    
+
     @app.route('/articulos', methods=['GET'])
-    def get():
+    def get_art():
         db = database.ArticuloDB()
         data = db.get("articulos")
         db.close()
         return data, 200
 
     @app.route('/articulos', methods=['DELETE'])
-    def delete():
+    def delete_art():
         cod = request.json.get('cod')
         db = database.ArticuloDB()
         db.delete("articulos", {'codigo': cod})
@@ -117,37 +117,37 @@ class Articulo:
         return 204
 
 class Paquete:
-    @app.route('/paquetes/<str:cod>', methods=['GET'])
-    def get_by_cod(cod: str):
+    @app.route('/paquetes/<cod>', methods=['GET'])
+    def get_by_cod(cod):
         db = database.PaqueteDB()
         info = db.get_paquete_by_codigo(cod)
         db.close()
         if info == [] or info == {}:
             return 'Código de paquete no encontrado', 404
         return info, 200
-    
+
     @app.route('/pedidos', methods=['POST'])
-    def add():
+    def add_paq():
         return 'Lo sentimos, aún estamos trabajando en ello', 501
-    
+
 class Repartidor:
     @app.route('/repartidores', methods=['POST'])
-    def add():
+    def add_rep():
         data = request.get_json()
         db = database.RepartidorDB()
         db.insert("repartidores", data)
         db.close()
         return 201
-    
+
     @app.route('/repartidores', methods=['GET'])
-    def get():
+    def get_rep():
         db = database.RepartidorDB()
         data = db.get("repartidores")
         db.close()
         return data, 200
-    
+
     @app.route('/repartidores', methods=['DELETE'])
-    def delete():
+    def delete_rep():
         id = request.json.get('id')
         db = database.RepartidorDB()
         try:
@@ -156,10 +156,10 @@ class Repartidor:
             return {e}, 400
         db.close()
         return 204
-    
+
 class Stats:
     @app.route('/stats', methods=['GET'])
-    def get():
+    def get_stats():
         return 'Not yet implemented', 501
 
 @app.route('/test', methods=['GET'])
