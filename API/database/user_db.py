@@ -6,13 +6,13 @@ class UserDB(DatabaseBase):
     def __init__(self, db_name=DB_NAME):
         super().__init__(db_name)
         self.add("users", "users_by_city", """
-            SELECT u.id, u.user, u.type, pd.fecha, pd.dir, pd.cp, pd.ciudad, pd.genero
+            SELECT u.id, u.user, u.admin, pd.fecha, pd.dir, pd.cp, pd.ciudad, pd.genero
             FROM users u
             JOIN personal_data pd ON u.id = pd.id
             WHERE pd.ciudad = ?
         """)
 
-    def add_user(self, username: str, password: str, user_type: str):
+    def add_user(self, username: str, password: str, is_admin: bool):
         """Añade un nuevo usuario a la base de datos"""
                 
         existing_user = self.get("users", {"user": username}, fetch_all=False)
@@ -22,7 +22,7 @@ class UserDB(DatabaseBase):
         return self.insert("users", {
             "user": username,
             "password": password, #no es necesario que password sea hasheado porque la API ya pasa un hash como parámetro
-            "type": user_type
+            "admin": is_admin
         })
 
     def get_user(self, user_id: Optional[int] = None, username: Optional[str] = None):
