@@ -327,7 +327,21 @@ class OpenRouteService:
                         raise
         return None
 
+    @staticmethod
+    def mostrar_ruta(info):
+        if info is not None:
+            distancia, duracion, instrucciones = info
 
+            pasos = ""
+            for i, instruccion in enumerate(instrucciones):
+                pasos += f"{i + 1}. {instruccion}\n"
+            return f'''\nINFORMACIÓN DE LA RUTA
+--------------------------
+- Distancia: {distancia}
+- Duración: {duracion}
+- Instrucciones:
+--------------------------
+{pasos}'''
 
 
 
