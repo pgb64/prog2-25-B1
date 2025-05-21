@@ -43,7 +43,10 @@ def menu_usuario(url):
                 direccion = f'{calle}, {num}, {cod_p}, {provincia}'
                 maps = ors_api.OpenRouteService()
                 coords = maps.obtener_coords(direccion)
-                print(coords)
+                try:
+                    sede = maps.sede_mas_cercana(coords)
+                except:
+                    pass
                 thread = []
                 continue
             case [3]:
@@ -153,7 +156,7 @@ def menu_vendedor(url, email):
                 print("""Ver estadísticas:
 1. Artículos
 2. Repartidores
-3. Estadísticas personalizadas
+3. Mostrar mapa
 4. Atrás""")
                 
             case [2, 1]:
@@ -169,8 +172,7 @@ def menu_vendedor(url, email):
                 continue
 
             case [2, 3]:
-                res = requests.get(f'{url}/stats')
-                print(res.text)
+                #
                 thread.pop()
                 continue
 

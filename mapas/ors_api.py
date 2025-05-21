@@ -360,7 +360,7 @@ class OpenRouteService:
             Nombre de la sede más cercana o None si la lista está vacía.
         """
         if not lista_sedes:
-            return None
+            lista_sedes = [sede[0] for sede in Sede.info_sedes()]
 
         sede_cercana = None
         distancia_min = None
