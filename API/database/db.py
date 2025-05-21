@@ -120,7 +120,7 @@ class DatabaseBase:
                 id INTEGER PRIMARY KEY AUTOINCREMENT, 
                 user TEXT UNIQUE NOT NULL,
                 password TEXT NOT NULL, 
-                type TEXT NOT NULL)''',
+                admin BOOLEAN NOT NULL DEFAULT 0)''',
                 
             '''CREATE TABLE IF NOT EXISTS personal_data (
                 id INTEGER PRIMARY KEY, 
@@ -174,13 +174,3 @@ class DatabaseBase:
         if hasattr(self, 'conn') and self.conn:
             self.conn.close()
 
-
-#No recuerdo que esto estuviera aqui, pero lo dejo por si acaso
-class AlreadyExistsError(Exception):
-    pass
-
-class DataNotFoundError(Exception):
-    pass
-
-class DataDoesntMatchError(Exception):
-    pass
