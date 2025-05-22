@@ -1,5 +1,8 @@
+# Importar los módulso necesarios
 import requests
 from mapas import ors_api, visual
+from mapas.ors_api import OpenRouteService
+from mapas.sedes import Sede
 
 def menu_usuario(url):
     thread = []
@@ -41,11 +44,35 @@ def menu_usuario(url):
                 direccion = (calle, num, cod_p, provincia)
                 requests.post(f'{url}/paquetes', json={'direccion': direccion, 'articulo': art})
                 direccion = f'{calle}, {num}, {cod_p}, {provincia}'
-                maps = ors_api.OpenRouteService()
-                coords = maps.obtener_coords(direccion)
+                
                 try:
-                    sede = maps.sede_mas_cercana(coords)
-                except:
+                    op = input('¿Quieres ver la ruta de reparto? (s/n): ')
+                    if op == 's':
+                        # Instancia de OpenRouteService
+                        ors = ors_api.OpenRouteService()
+                        Sede.cargar_csv()
+
+                        # Coordenadas del usuario y la sede
+                        coords_user = ors.obtener_coords(f'{calle} {num}, {cod_p}, {provincia}')
+                        sede = ors.sede_mas_cercana(coords_user, Sede.info_sedes())
+                        coords_sede = Sede.sede_coord(sede)
+
+                        # Información de la ruta
+                        print(ors.mostrar_ruta(ors.obtener_ruta(coords_sede, coords_user, incluir_pasos=True)))
+                        print(f'Sede más cercana: {sede}')
+                        print('------------------------------------------------------------')
+                        # Mostrar mapa
+                        visual.MapaGestor().mostrar_mapa_destino(coords_user)
+                    
+                    elif op == 'n':
+                        print('\nPedido realizado.\n')
+                    
+                    else:
+                        print('Introduce una opción válida.')
+                        continue
+
+                except Exception as e:
+                    print(f'Error: {e}')
                     pass
                 thread = []
                 continue
