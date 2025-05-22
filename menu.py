@@ -68,7 +68,7 @@ def menu_usuario(url):
         
 def menu_vendedor(url, email):
     thread = []
-    start = """Selecciona una opción:
+    start = """\nSelecciona una opción:
 1. Realizar gestiones
 2. Ver estadísticas
 3. Salir"""
@@ -77,19 +77,19 @@ def menu_vendedor(url, email):
             case []:
                 print(start)
             case [1]:
-                print("""Gestionar...
+                print("""\nGestionar...
 1. Artículos
 2. Repartidores
 3. Atrás""")
             case [1, 1]:
-                print("""Gestionar artículos:
+                print("""\nGestionar artículos:
 1. Añadir un artículo
 2. Eliminar un artículo
 3. Atrás""")
             case [1, 1, 1]:
                 while True:
                         try:
-                            nom = input('Nombre: ')
+                            nom = input('\nNombre: ')
                             cant = int(input('Cantidad: '))
                             desc = input('Descripción: ')
                             break
@@ -116,7 +116,7 @@ def menu_vendedor(url, email):
                 continue
 
             case [1, 2]:
-                print("""Gestionar repartidores:
+                print("""\nGestionar repartidores:
 1. Añadir un repartidor
 2. Eliminar un repartidor
 3. Atrás""")
@@ -124,7 +124,7 @@ def menu_vendedor(url, email):
             case [1, 2, 1]:
                 while True:
                         try:
-                            nom = input('Nombre: ')
+                            nom = input('\nNombre: ')
                             tlf = input('Telefono: ')
                             prov = input('Provincia: ')
                             vehiculo = input('Vehiculo: ')
@@ -153,7 +153,7 @@ def menu_vendedor(url, email):
                 continue
                 
             case [2]:
-                print("""Ver estadísticas:
+                print("""\nVer estadísticas:
 1. Artículos
 2. Repartidores
 3. Mostrar mapa
@@ -186,7 +186,7 @@ def menu_vendedor(url, email):
                 break
 
             case _:
-                print('Introduce una opción válida')
+                print('\nIntroduce una opción válida')
                 thread.pop()
                 continue
 
@@ -195,5 +195,5 @@ def menu_vendedor(url, email):
             op = int(op)
             thread.append(op)
         except:
-            print('Introduce una selección válida.')
+            print('\nIntroduce una selección válida.')
             continue

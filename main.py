@@ -54,7 +54,6 @@ def main():
 
     #abrir el menú
     res = requests.get(f'{url}/is_admin', json={'email': email}).text
-    print(res)
     if res == 'True':
         menu.menu_vendedor(url, email)
     else:
