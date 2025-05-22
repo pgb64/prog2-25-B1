@@ -7,7 +7,6 @@ Trabajo de prog-2 sistema de gestión de reparto.
 * [Jorge Izquierdo Baeza](https://github.com/jorgeizquierdo-git)
 * [Guillermo Espinosa Ruiz](https://github.com/ruukhaUA)
 * [Alejandro Parraga Sanchez](https://github.com/w4lexf)
-* [Ignacio Mendoza Diaz](https://github.com/w4lexf)
 * [Ignacio Mendoza Diaz](https://github.com/imd24)
 
 ## Profesor
@@ -18,7 +17,7 @@ Trabajo de prog-2 sistema de gestión de reparto.
 * Gestión de repartidores y furgonetas por provincia, estableciendo un sitema de estados para controlar la disponibilidad y optimizar la distribución de envíos.  (Alejandro Párraga Sánchez) 
 * Generación y visualización de mapas interactivos con rutas optimizadas, calculando estimaciones de tiempo de entrega mediante integración con APIs como Google Maps y open Source Routing. (Pablo García Beltrá) 
 * Almacenamiento y gestión de datos en una BD (info de paquetes, usuarios, repartidores...), desde la terminal se podrán consultar y modificar. (Andrés Segurado Climent) 
-* Generación y exportación de informes de todo tipo (accediendo a la BD) en variedad de formatos: csv, json, txt... (Guillermo Espinosa Ruíz) 
+* Creación de una API que coordine la base de datos con el resto del programa y la interfaz de usuario, así como el login y la gestión de tokens. También un archivo main y unos menús que controlen el correcto flujo de ejecución (Guillermo Espinosa Ruiz) 
 * Implementación de un sistema de simulación con variables ajustables (cantidad pedidos, nº repartidores...) usando métodos probabilísticos avanzados, esto permitirá experimentar en diferentes escenarios. (Ignacio Mendoza Díaz) 
 
 ## Instrucciones de instalación y ejecución
@@ -34,6 +33,11 @@ Haz pip install -r requirements.txt y tendras todo lo necesario para poder ejecu
 
 
 ## Resumen de la API
-[//]: # (Para comenzar a usar la app en Visual Studio abre dos terminales a la vez, en el primero ejecuta: python run_server.py)
-[//]: # (Luego en la segunda terminal ejecuta: python main.py con esto ya se podrá ver la interfaz de la app)
-[//]: # (Usuario: carmeng57 Contraseña : 5048%MdLTh)
+Se encuentra subida a pythonanywhere.com, al igual que la base de datos. La ruta de acceso es ruukha.pythonanywhere.com
+Tiene distintas rutas con varios métodos para asegurar su correcta implementación
+Por cómo está hecho este programa, no será necesario conocer el funcionamiento de la API para usarla, pero sí es interesante saber que en el instante en el que se cree, modifique o elimine un elemento, esos cambios se verán reflejados en tiempo real en la base de datos, que podrá ser accedida desde otra instancia del programa.
+
+## Cómo ejecutar el programa
+Hay dos métodos:
+1. Si te has descargado el ejecutable, has de abrir la ruta en la que se encuentre en la terminal de linux (puedes hacer click derecho en un espacio vacío de la carpeta en la que se encuentre el archivo para abrir una terminal en esa carpeta, o abrir en propio archivo en la terminal) y ejecutar el comando 'sudo ./main'. El archivo se ejecutará
+2. Si tienes el código fuente, simplemente has de ejecutar main.py

@@ -1,6 +1,6 @@
 import openrouteservice
 from geopy.geocoders import Nominatim
-from geopy.exc import GeocoderTimedOut, GeocoderServiceError
+from mapas import sedes
 
 class OpenRouteService:
     '''
@@ -327,7 +327,66 @@ class OpenRouteService:
                         raise
         return None
 
+    @staticmethod
+    def mostrar_ruta(info):
+        if info is not None:
+            distancia, duracion, instrucciones = info
+
+            pasos = ""
+            for i, instruccion in enumerate(instrucciones):
+                pasos += f"{i + 1}. {instruccion}\n"
+            return f'''\nINFORMACIÓN DE LA RUTA
+--------------------------
+- Distancia: {distancia}
+- Duración: {duracion}
+- Instrucciones:
+--------------------------
+{pasos}'''
+
+    def sede_mas_cercana(self, coords: tuple, lista_sedes: list[tuple]) -> str | None:
+        """
+        Devuelve el nombre de la sede más cercana usando distancia Manhattan aproximada.
+
+        Parámetros
+        ----------
+        coords : tuple
+            Coordenadas (latitud, longitud) del usuario.
+        lista_sedes : list of tuples
+            Lista con tuplas (nombre_sede, (lat, lon)).
+
+        Returns
+        -------
+        str | None
+            Nombre de la sede más cercana o None si la lista está vacía.
+        """
+        if not lista_sedes:
+            lista_sedes = [sede[0] for sede in sedes.Sede.info_sedes()]
+
+        sede_cercana = None
+        distancia_min = None
+
+        for nombre, (lat, lon) in lista_sedes:
+            dist = abs(coords[0] - lat) + abs(coords[1] - lon)  
+            if distancia_min is None or dist < distancia_min:
+                distancia_min = dist
+                sede_cercana = nombre
+
+        return sede_cercana
 
 
+if __name__ == "__main__":
+    
+    ors = OpenRouteService()
+    coords = ors.obtener_coords("ruperto chapí 39, novelda")
+    print(coords)
+    
+    sedes.Sede.cargar_csv() # Si no se pone devuelve None
+    sede = ors.sede_mas_cercana(coords, sedes.Sede.info_sedes())
+    print(f"La sede más cercana es: {sede}")
 
+    #Ruta de sede a la coordenada
+    cord_sede = sedes.Sede.sede_coord(sede)
+    ruta = ors.obtener_ruta(coords, cord_sede, incluir_pasos=True)
+    print(ruta)
+    print(OpenRouteService.mostrar_ruta(ruta))
 

@@ -1,8 +1,12 @@
+# Importar los módulso necesarios
 import requests
+from mapas import ors_api, visual
+from mapas.ors_api import OpenRouteService
+from mapas.sedes import Sede
 
 def menu_usuario(url):
     thread = []
-    start = """Selecciona una opción:
+    start = """\nSelecciona una opción:
 1. Hacer una consulta
 2. Hacer un pedido
 3. Salir"""
@@ -11,21 +15,18 @@ def menu_usuario(url):
             case []:
                 print(start)
             case [1]:
-                print("""Consultar...
+                print("""\nConsultar...
 1. El catálogo
 2. Un pedido
 3. Atrás""")
             case [1, 1]:
-                '''
-                q
-                '''
-                print('--- Datos ---') #datos de los articulos (data.get_articulos())
+                print('\n--- Datos ---') #datos de los articulos (data.get_articulos())
                 info = requests.get(f'{url}/articulos')
                 print(info)
                 thread = []
                 continue
             case [1, 2]:
-                cod = input('Código del pedido: ') 
+                cod = input('\nCódigo del pedido: ') 
                 info = requests.get(f'{url}/pedidos/{cod}') #datos del pedido suministrado (data.get_paquete_by_codigo(cod))
                 print(info.text)
                 thread = []
@@ -35,8 +36,44 @@ def menu_usuario(url):
                 thread.pop()
                 continue
             case [2]:
-                direccion = input('Dirección: ')
-                requests.post(f'{url}/paquetes', json={'direccion': direccion})
+                art = input('\nCódigo del artículo: ')
+                calle = input('Calle: ')
+                num = input('Numero: ')
+                cod_p = input('Codigo postal: ')
+                provincia = input('Provincia: ')
+                direccion = (calle, num, cod_p, provincia)
+                requests.post(f'{url}/paquetes', json={'direccion': direccion, 'articulo': art})
+                direccion = f'{calle}, {num}, {cod_p}, {provincia}'
+                
+                try:
+                    op = input('¿Quieres ver la ruta de reparto? (s/n): ')
+                    if op == 's':
+                        # Instancia de OpenRouteService
+                        ors = ors_api.OpenRouteService()
+                        Sede.cargar_csv()
+
+                        # Coordenadas del usuario y la sede
+                        coords_user = ors.obtener_coords(f'{calle} {num}, {cod_p}, {provincia}')
+                        sede = ors.sede_mas_cercana(coords_user, Sede.info_sedes())
+                        coords_sede = Sede.sede_coord(sede)
+
+                        # Información de la ruta
+                        print(ors.mostrar_ruta(ors.obtener_ruta(coords_sede, coords_user, incluir_pasos=True)))
+                        print(f'Sede más cercana: {sede}')
+                        print('------------------------------------------------------------')
+                        # Mostrar mapa
+                        visual.MapaGestor().mostrar_mapa_destino(coords_user)
+                    
+                    elif op == 'n':
+                        print('\nPedido realizado.\n')
+                    
+                    else:
+                        print('Introduce una opción válida.')
+                        continue
+
+                except Exception as e:
+                    print(f'Error: {e}')
+                    pass
                 thread = []
                 continue
             case [3]:
@@ -58,7 +95,7 @@ def menu_usuario(url):
         
 def menu_vendedor(url, email):
     thread = []
-    start = """Selecciona una opción:
+    start = """\nSelecciona una opción:
 1. Realizar gestiones
 2. Ver estadísticas
 3. Salir"""
@@ -67,19 +104,19 @@ def menu_vendedor(url, email):
             case []:
                 print(start)
             case [1]:
-                print("""Gestionar...
+                print("""\nGestionar...
 1. Artículos
 2. Repartidores
 3. Atrás""")
             case [1, 1]:
-                print("""Gestionar artículos:
+                print("""\nGestionar artículos:
 1. Añadir un artículo
 2. Eliminar un artículo
 3. Atrás""")
             case [1, 1, 1]:
                 while True:
                         try:
-                            nom = input('Nombre: ')
+                            nom = input('\nNombre: ')
                             cant = int(input('Cantidad: '))
                             desc = input('Descripción: ')
                             break
@@ -106,7 +143,7 @@ def menu_vendedor(url, email):
                 continue
 
             case [1, 2]:
-                print("""Gestionar repartidores:
+                print("""\nGestionar repartidores:
 1. Añadir un repartidor
 2. Eliminar un repartidor
 3. Atrás""")
@@ -114,7 +151,7 @@ def menu_vendedor(url, email):
             case [1, 2, 1]:
                 while True:
                         try:
-                            nom = input('Nombre: ')
+                            nom = input('\nNombre: ')
                             tlf = input('Telefono: ')
                             prov = input('Provincia: ')
                             vehiculo = input('Vehiculo: ')
@@ -143,10 +180,10 @@ def menu_vendedor(url, email):
                 continue
                 
             case [2]:
-                print("""Ver estadísticas:
+                print("""\nVer estadísticas:
 1. Artículos
 2. Repartidores
-3. Estadísticas personalizadas
+3. Mostrar mapa
 4. Atrás""")
                 
             case [2, 1]:
@@ -162,8 +199,7 @@ def menu_vendedor(url, email):
                 continue
 
             case [2, 3]:
-                res = requests.get(f'{url}/stats')
-                print(res.text)
+                visual.MapaGestor().mostrar_mapa_sedes()
                 thread.pop()
                 continue
 
@@ -177,7 +213,7 @@ def menu_vendedor(url, email):
                 break
 
             case _:
-                print('Introduce una opción válida')
+                print('\nIntroduce una opción válida')
                 thread.pop()
                 continue
 
@@ -186,5 +222,5 @@ def menu_vendedor(url, email):
             op = int(op)
             thread.append(op)
         except:
-            print('Introduce una selección válida.')
+            print('\nIntroduce una selección válida.')
             continue
