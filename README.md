@@ -37,3 +37,8 @@ Haz pip install -r requirements.txt y tendras todo lo necesario para poder ejecu
 Se encuentra subida a pythonanywhere.com, al igual que la base de datos. La ruta de acceso es ruukha.pythonanywhere.com
 Tiene distintas rutas con varios métodos para asegurar su correcta implementación
 Por cómo está hecho este programa, no será necesario conocer el funcionamiento de la API para usarla, pero sí es interesante saber que en el instante en el que se cree, modifique o elimine un elemento, esos cambios se verán reflejados en tiempo real en la base de datos, que podrá ser accedida desde otra instancia del programa.
+
+## Cómo ejecutar el programa
+Hay dos métodos:
+1. Si te has descargado el ejecutable, has de abrir la ruta en la que se encuentre en la terminal de linux (puedes hacer click derecho en un espacio vacío de la carpeta en la que se encuentre el archivo para abrir una terminal en esa carpeta, o abrir en propio archivo en la terminal) y ejecutar el comando 'sudo ./main'. El archivo se ejecutará
+2. Si tienes el código fuente, simplemente has de ejecutar main.py
